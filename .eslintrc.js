@@ -5,6 +5,7 @@ module.exports = {
   },
   extends: [
     'plugin:react/recommended',
+    'hackreactor',
     'airbnb',
   ],
   parserOptions: {
