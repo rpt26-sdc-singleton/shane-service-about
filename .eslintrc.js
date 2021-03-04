@@ -19,5 +19,6 @@ module.exports = {
     'react',
   ],
   rules: {
+    'no-plusplus': [1, { allowForLoopAfterthoughts: true }],
   },
 };
