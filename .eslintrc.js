@@ -20,5 +20,6 @@ module.exports = {
   ],
   rules: {
     'no-plusplus': [1, { allowForLoopAfterthoughts: true }],
+    'no-console': 0,
   },
 };
