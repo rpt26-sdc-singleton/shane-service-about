@@ -19,8 +19,12 @@ const descriptionSchema = new Schema({
   description: String,
   learner_career_outcomes: [{ icon: String, pct: Number, outcome: String }],
   metadata: [{ icon: String, title: String, subtitle: String }],
-  what_you_will_learn: [String],
-  skills_you_will_gain: [String],
+  what_you_will_learn: [{
+    type: String,
+  }],
+  skills_you_will_gain: [{
+    type: String,
+  }],
 });
 
 module.exports = {

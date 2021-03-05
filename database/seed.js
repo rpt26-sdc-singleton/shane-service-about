@@ -8,8 +8,13 @@ const generateRandomPercentage = () => (Math.floor(Math.random() * 100) / 100);
 
 const generateNumberWithinRange = (min, max) => (Math.floor(Math.random() * (max - min) + min));
 
-const generateFillerParas = async () => {
-  const text = await axios.get('https://baconipsum.com/api/?type=meat-and-filler&paras=4&format=text');
+const generateFillerText = async (options) => {
+  let text;
+  if (options.paras) {
+    text = await axios.get(`https://baconipsum.com/api/?type=meat-and-filler&paras=${options.paras}&format=text`);
+  } else if (options.sentences) {
+    text = await axios.get(`https://baconipsum.com/api/?type=meat-and-filler&sentences=${options.sentences}&format=text`);
+  }
   return text.data;
 };
 
@@ -99,16 +104,39 @@ const generateMetadata = () => {
   return icons;
 };
 
+const generateWhatYouWillLearn = async () => {
+  const whatYouWillLearn = [];
+  for (let i = 0; i < 4; i++) {
+    // eslint-disable-next-line no-await-in-loop
+    const text = await generateFillerText({ sentences: 2 });
+    whatYouWillLearn.push(text);
+  }
+  return whatYouWillLearn;
+};
+
+const generateSkillsYouWillGain = async () => {
+  const skills = [];
+  const numOfSkills = generateNumberWithinRange(0, 10);
+  for (let i = 0; i < numOfSkills; i++) {
+    // eslint-disable-next-line no-await-in-loop
+    const skill = await generateFillerText({ sentences: 1 });
+    skills.push(skill);
+  }
+  return skills;
+};
+
 const generateRecords = async () => {
   const records = [];
-  for (let i = 1; i < 10; i++) {
+  for (let i = 1; i < 5; i++) {
     const item = {
       course_id: i, // 1 - 100
       recent_views: Math.floor(Math.random() * 1000000), // Random number between 0 and 1 million
       // eslint-disable-next-line no-await-in-loop
-      description: await generateFillerParas(), // Bacon ipsum - 4 paragraphs
+      description: await generateFillerText({ paras: 4 }), // Bacon ipsum - 4 paragraphs
       learner_career_outcomes: generateLearnerCareerOutcomes(),
       metadata: generateMetadata(),
+      what_you_will_learn: generateWhatYouWillLearn(),
+      skills_you_will_gain: generateSkillsYouWillGain(),
     };
     records.push(item);
   }
@@ -127,4 +155,6 @@ const seedDatabase = async () => {
 };
 
 // on setTimeout to allow database to fully connect
+// generateWhatYouWillLearn();
+// generateSkillsYouWillGain();
 setTimeout(seedDatabase, 500);
