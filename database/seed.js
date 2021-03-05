@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 const mongoose = require('mongoose');
 const axios = require('axios');
 const { descriptionSchema } = require('./db.js');
@@ -119,7 +120,11 @@ const generateSkillsYouWillGain = async () => {
   const numOfSkills = generateNumberWithinRange(0, 10);
   for (let i = 0; i < numOfSkills; i++) {
     // eslint-disable-next-line no-await-in-loop
-    const skill = await generateFillerText({ sentences: 1 });
+    let skill = await generateFillerText({ sentences: 1 });
+    if (skill.split(' ').length > 4) {
+      const numOfWords = generateNumberWithinRange(2, 4);
+      skill = skill.split(' ').slice(0, numOfWords).join(' ');
+    }
     skills.push(skill);
   }
   return skills;
@@ -131,12 +136,11 @@ const generateRecords = async () => {
     const item = {
       course_id: i, // 1 - 100
       recent_views: Math.floor(Math.random() * 1000000), // Random number between 0 and 1 million
-      // eslint-disable-next-line no-await-in-loop
       description: await generateFillerText({ paras: 4 }), // Bacon ipsum - 4 paragraphs
-      learner_career_outcomes: generateLearnerCareerOutcomes(),
-      metadata: generateMetadata(),
-      what_you_will_learn: generateWhatYouWillLearn(),
-      skills_you_will_gain: generateSkillsYouWillGain(),
+      learner_career_outcomes: await generateLearnerCareerOutcomes(),
+      metadata: await generateMetadata(),
+      what_you_will_learn: await generateWhatYouWillLearn(),
+      skills_you_will_gain: await generateSkillsYouWillGain(),
     };
     records.push(item);
   }
@@ -155,6 +159,4 @@ const seedDatabase = async () => {
 };
 
 // on setTimeout to allow database to fully connect
-// generateWhatYouWillLearn();
-// generateSkillsYouWillGain();
 setTimeout(seedDatabase, 500);
