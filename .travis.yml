@@ -1,4 +1,4 @@
 language: node_js
 notifications:
-  pushover
+  pushover:
     template: "%{repository_slug} (%{commit}) : %{message} - Build details: %{build_url}"
