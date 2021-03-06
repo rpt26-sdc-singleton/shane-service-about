@@ -53,17 +53,17 @@ const generateLanguageList = () => {
 const generateLearnerCareerOutcomes = () => {
   const outcomes = [
     {
-      icon: 'fa-map-signs',
+      icon: 'signpost',
       pct: generateRandomPercentage(),
       outcome: 'started a new career after completing these courses',
     },
     {
-      icon: 'fa-briefcase',
+      icon: 'briefcase',
       pct: generateRandomPercentage(),
       outcome: 'got a tangible career benefit from this course',
     },
     {
-      icon: 'fa-money',
+      icon: 'money',
       pct: generateRandomPercentage(),
       outcome: 'got a pay increase or promotion',
     },
@@ -108,7 +108,6 @@ const generateMetadata = () => {
 const generateWhatYouWillLearn = async () => {
   const whatYouWillLearn = [];
   for (let i = 0; i < 4; i++) {
-    // eslint-disable-next-line no-await-in-loop
     const text = await generateFillerText({ sentences: 2 });
     whatYouWillLearn.push(text);
   }
@@ -119,7 +118,6 @@ const generateSkillsYouWillGain = async () => {
   const skills = [];
   const numOfSkills = generateNumberWithinRange(0, 10);
   for (let i = 0; i < numOfSkills; i++) {
-    // eslint-disable-next-line no-await-in-loop
     let skill = await generateFillerText({ sentences: 1 });
     if (skill.split(' ').length > 4) {
       const numOfWords = generateNumberWithinRange(2, 4);
@@ -132,7 +130,8 @@ const generateSkillsYouWillGain = async () => {
 
 const generateRecords = async () => {
   const records = [];
-  for (let i = 1; i < 5; i++) {
+  for (let i = 1; i < 101; i++) {
+    console.log(`Creating record ${i}`);
     const item = {
       course_id: i, // 1 - 100
       recent_views: Math.floor(Math.random() * 1000000), // Random number between 0 and 1 million
@@ -148,6 +147,7 @@ const generateRecords = async () => {
 };
 
 const seedDatabase = async () => {
+  console.time('Database Seed');
   const records = await generateRecords();
   Description.insertMany(records, (err, res) => {
     if (err) {
@@ -156,6 +156,7 @@ const seedDatabase = async () => {
       console.log(res);
     }
   });
+  console.timeEnd('Database Seed');
 };
 
 // on setTimeout to allow database to fully connect

@@ -21,5 +21,6 @@ module.exports = {
   rules: {
     'no-plusplus': [1, { allowForLoopAfterthoughts: true }],
     'no-console': 0,
+    'import/no-extraneous-dependencies': [1, { devDependencies: true }],
   },
 };
