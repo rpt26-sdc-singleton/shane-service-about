@@ -10,7 +10,7 @@
   "scripts": {
     "server-dev": "nodemon ./server/index.js",
     "react-dev": "webpack --watch",
-    "test": "jest --coverage"
+    "test": "jest"
   },
   "dependencies": {
     "axios": "^0.21.1",
