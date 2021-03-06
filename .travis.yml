@@ -3,9 +3,6 @@ node_js:
 - node
 notifications:
   pushover:
-    template: "%{repository_slug} (%{commit}) : %{message} - Build details: %{build_url}"
-    on_success: always
-    on_failure: always
     api_key:
       secure: y+I31EJD6pmTFpVZfRiGAx9ZgoHRu58Jsozu9qwBFiYNQef5cTT4heUKrp1dF7kKHhtPK45Qc33Ah1oU+h6sgG0oKEU33L1TmUi6NJ0fQHZ3X89Bsknp/O1KQuXfWG+bNU+RsUoaC6ykQbq5Svz3npxcetElGR5ITRy7h0MGIhbqYL12tzJQhe8vVRhGAZp6p8iES4Kt0YvLYOhkg3GU65X6IhJIDePzJHLzbPj5ryDUAGbXt4eP1Dan974mjIqEmYf0BFYuKGfxqv9bs8xlwdjX2H8Kn+MMsCl0l+vUlzluiiOL9z72hdlOSkAjRddfmAvxuoTI5PWpA6X/aPALNXZgL9SjtEi0FBCw5yIo5777/jIKaoUbASsZGtTxDMv9rMijnPW0nB59iEYThSD9GdYzjLDa6eAS5mMbUF0M7H4d4/p7xtRt7HhdnWWpn7WpRt/adok0DzEggLkAWsbm/AQoeKxn7EhjoTgz1wSF3PF2NT7Q+T1ekJLOnSEamtMW2kAgE9hpNlB4QcMjPnUZsgmCvOayHL8FL1dW/ipo6BPiCSqGpCkSDXzbLGQwZIO8GsXn8vp0KWfueio/t9XOI92ZFJ5jspgb3L68/J5ZGju5CsdCl2Tl+3h79mJo4oXTC4nzIC/0Cjao9QCjszIuvGTRm4+MpFS8s4tvT/p/A9s=
     users:
