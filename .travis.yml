@@ -1,0 +1,7 @@
+language: node-js
+notifications:
+  pushover:
+    api_key: "[api token]"
+    users:
+      - "[user key]"
+    template: "%{repository_slug} (%{commit}) : %{message} - Build details: %{build_url}"
