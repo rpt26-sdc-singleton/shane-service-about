@@ -9,7 +9,8 @@
   },
   "scripts": {
     "server-dev": "nodemon ./server/index.js",
-    "react-dev": "webpack --watch"
+    "react-dev": "webpack --watch",
+    "test": "jest --coverage"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
