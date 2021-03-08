@@ -10,7 +10,8 @@
   "scripts": {
     "server-dev": "nodemon ./server/index.js",
     "react-dev": "webpack --watch",
-    "test": "jest --coverage"
+    "test": "jest --coverage",
+    "coveralls": "jest --coverage && cat ./tests/coverage/lcov.info | coveralls"
   },
   "dependencies": {
     "axios": "^0.21.1",
@@ -23,6 +24,7 @@
   "devDependencies": {
     "@babel/core": "^7.13.8",
     "@babel/preset-react": "^7.12.13",
+    "coveralls": "^3.1.0",
     "dotenv": "^8.2.0",
     "eslint": "^7.20.0",
     "eslint-config-airbnb": "^18.2.1",
