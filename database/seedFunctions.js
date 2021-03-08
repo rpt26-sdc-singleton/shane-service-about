@@ -124,9 +124,9 @@ const generateSkillsYouWillGain = async () => {
   return skills;
 };
 
-const generateRecords = async () => {
+const generateRecords = async (numToGenerate) => {
   const records = [];
-  for (let i = 1; i < 101; i++) {
+  for (let i = 1; i < numToGenerate + 1; i++) {
     console.log(`Creating record ${i}`);
     const item = {
       course_id: i, // 1 - 100
@@ -144,7 +144,7 @@ const generateRecords = async () => {
 
 const seedDatabase = async (Description) => {
   console.time('Database Seed');
-  const records = await generateRecords();
+  const records = await generateRecords(100);
   Description.insertMany(records, (err, res) => {
     if (err) {
       console.error(err);
@@ -157,6 +157,7 @@ const seedDatabase = async (Description) => {
 
 module.exports = {
   generateRandomPercentage,
+  generateRecords,
   generateFillerText,
   generateMetadata,
   generateNumberWithinRange,
