@@ -160,4 +160,15 @@ const seedDatabase = async () => {
 };
 
 // on setTimeout to allow database to fully connect
-setTimeout(seedDatabase, 500);
+// setTimeout(seedDatabase, 500);
+
+module.exports = {
+  generateRandomPercentage,
+  generateFillerText,
+  generateMetadata,
+  generateNumberWithinRange,
+  generateSkillsYouWillGain,
+  generateWhatYouWillLearn,
+  generateLanguageList,
+  generateLearnerCareerOutcomes,
+};
