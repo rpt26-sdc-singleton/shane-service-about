@@ -10,8 +10,8 @@
   "scripts": {
     "server-dev": "nodemon ./server/index.js",
     "react-dev": "webpack --watch",
-    "test": "jest --coverage",
-    "coveralls": "jest --coverage && cat ./tests/coverage/lcov.info | coveralls"
+    "test": "jest",
+    "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls"
   },
   "dependencies": {
     "axios": "^0.21.1",
