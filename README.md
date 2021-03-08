@@ -1,4 +1,7 @@
-# Project Name
+# Service - About
+
+[![Coverage Status](https://coveralls.io/repos/github/Ingenuity-rpt26/shane-service-about/badge.svg?branch=setup)](https://coveralls.io/github/Ingenuity-rpt26/shane-service-about?branch=setup)
+[![Build Status](https://www.travis-ci.com/Ingenuity-rpt26/shane-service-about.svg?branch=main)](https://www.travis-ci.com/Ingenuity-rpt26/shane-service-about)
 
 > Project description
 
