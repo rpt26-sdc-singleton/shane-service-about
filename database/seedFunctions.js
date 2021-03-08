@@ -1,9 +1,5 @@
 /* eslint-disable no-await-in-loop */
-const mongoose = require('mongoose');
 const axios = require('axios');
-const { descriptionSchema } = require('./db.js');
-
-const Description = mongoose.model('Description', descriptionSchema);
 
 const generateRandomPercentage = () => (Math.floor(Math.random() * 100) / 100);
 
@@ -146,7 +142,7 @@ const generateRecords = async () => {
   return records;
 };
 
-const seedDatabase = async () => {
+const seedDatabase = async (Description) => {
   console.time('Database Seed');
   const records = await generateRecords();
   Description.insertMany(records, (err, res) => {
@@ -159,9 +155,6 @@ const seedDatabase = async () => {
   console.timeEnd('Database Seed');
 };
 
-// on setTimeout to allow database to fully connect
-// setTimeout(seedDatabase, 500);
-
 module.exports = {
   generateRandomPercentage,
   generateFillerText,
@@ -171,4 +164,5 @@ module.exports = {
   generateWhatYouWillLearn,
   generateLanguageList,
   generateLearnerCareerOutcomes,
+  seedDatabase,
 };
