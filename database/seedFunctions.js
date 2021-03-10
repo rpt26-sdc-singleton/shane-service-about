@@ -16,7 +16,6 @@ const generateFillerText = async (options) => {
 };
 
 const generateLanguageList = () => {
-  const chosenLanguages = [];
   const languages = [
     'Arabic',
     'French',
@@ -38,11 +37,10 @@ const generateLanguageList = () => {
     'Kannada',
     'Romanian',
   ];
-  const numberOfLangsToUse = generateNumberWithinRange(0, languages.length);
-  for (let i = 0; i < numberOfLangsToUse; i++) {
-    const randomLanguageIndex = generateNumberWithinRange(0, languages.length);
-    chosenLanguages.push(languages.splice(randomLanguageIndex, 1)[0]);
-  }
+  const sliceStart = generateNumberWithinRange(0, languages.length);
+  const sliceEnd = generateNumberWithinRange(sliceStart, languages.length);
+  const chosenLanguages = languages.slice(sliceStart, sliceEnd).join(', ');
+
   return chosenLanguages;
 };
 
