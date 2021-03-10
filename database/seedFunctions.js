@@ -39,7 +39,7 @@ const generateLanguageList = () => {
   ];
   const sliceStart = generateNumberWithinRange(0, languages.length);
   const sliceEnd = generateNumberWithinRange(sliceStart, languages.length);
-  const chosenLanguages = languages.slice(sliceStart, sliceEnd).join(', ');
+  const chosenLanguages = languages.slice(sliceStart, sliceEnd);
 
   return chosenLanguages;
 };
