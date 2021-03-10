@@ -1,4 +1,5 @@
 const express = require('express');
+const db = require('../database/model');
 
 const app = express();
 const PORT = 3002;
@@ -6,7 +7,7 @@ const PORT = 3002;
 app.use(express.static('./public'));
 
 app.get('/api/about/:id', async (req, res) => {
-  const data = await db.get(req.params.id);
+  const data = await db.getOne(req.params.id);
   res.send(data).status(200);
 });
 
