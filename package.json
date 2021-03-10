@@ -9,16 +9,10 @@
   },
   "scripts": {
     "server-dev": "nodemon ./server/index.js",
-<<<<<<< HEAD
     "watch": "webpack --watch",
     "react-start": "webpack serve --open",
     "build": "webpack",
     "test": "jest --coverage"
-=======
-    "react-dev": "webpack --watch",
-    "test": "jest",
-    "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls"
->>>>>>> main
   },
   "dependencies": {
     "axios": "^0.21.1",
