@@ -1,0 +1,15 @@
+language: node_js
+node_js:
+- node
+script:
+  - npm test -- --coverage
+after_script:
+  - COVERALLS_REPO_TOKEN=$coveralls_repo_token npm run coveralls
+notifications:
+  pushover:
+    on_success: always
+    on_failure: always
+    api_key:
+      secure: y+I31EJD6pmTFpVZfRiGAx9ZgoHRu58Jsozu9qwBFiYNQef5cTT4heUKrp1dF7kKHhtPK45Qc33Ah1oU+h6sgG0oKEU33L1TmUi6NJ0fQHZ3X89Bsknp/O1KQuXfWG+bNU+RsUoaC6ykQbq5Svz3npxcetElGR5ITRy7h0MGIhbqYL12tzJQhe8vVRhGAZp6p8iES4Kt0YvLYOhkg3GU65X6IhJIDePzJHLzbPj5ryDUAGbXt4eP1Dan974mjIqEmYf0BFYuKGfxqv9bs8xlwdjX2H8Kn+MMsCl0l+vUlzluiiOL9z72hdlOSkAjRddfmAvxuoTI5PWpA6X/aPALNXZgL9SjtEi0FBCw5yIo5777/jIKaoUbASsZGtTxDMv9rMijnPW0nB59iEYThSD9GdYzjLDa6eAS5mMbUF0M7H4d4/p7xtRt7HhdnWWpn7WpRt/adok0DzEggLkAWsbm/AQoeKxn7EhjoTgz1wSF3PF2NT7Q+T1ekJLOnSEamtMW2kAgE9hpNlB4QcMjPnUZsgmCvOayHL8FL1dW/ipo6BPiCSqGpCkSDXzbLGQwZIO8GsXn8vp0KWfueio/t9XOI92ZFJ5jspgb3L68/J5ZGju5CsdCl2Tl+3h79mJo4oXTC4nzIC/0Cjao9QCjszIuvGTRm4+MpFS8s4tvT/p/A9s=
+    users:
+      - secure: hMKdiJAuxU91z6oCmaR2BZLrOWLeI7dVkzlNVMTt+J6NCFIJVXUIIE48550POJq9HzIkYXoixwBzbm95PunHjVY8k/PIoh0ue/IAZqkPJWDSZBOJOoHDo6hdOXXYGIqoykU5aw4KmtYd7uz/x5jj4ipGdHzWYE3A4BUFqY6gtDwoVnUJXFHjwIgqp3k0hFZn1UUHD77kPNhCp7pFZ4oNtzC9uTxxAzEmybnMcdK5BSWGnkWqjJfVuwtEl7/+m/f5cdknr+Co/pt+LPx8Gm3DYIq2vZ0++hjaP++SdIyTnY5SvbmVobEV1k4d0aw+8zW/HgRRK6KMro+5eiNMIWeC8i92DGx8UMOYfPjyf+OQ05eXRwW8215oQ8tHo3VVTauwqfElsoyqb1GHAQlncQjHyhnG7xLJ+DWl68/+l+JfZk4KVe4Jn3UiGevZIvrqhXJbxv0j37U+SLBEvj4cbx1gj4+RliL2SGtn6lgC6DSVavmB9yVyP0/mJIHYeqy2iecUfbMw0ZmOdAKseld3ylCqglD3nW+nqyop+RPdPnC/uwZscNEMlfDLwbUM49TbRXG/B3tA0NeN3xOUEPyNQt/ZfNNY5/xI0PtQybTRPTXd43mD9+b3c7wb5hZGcck9w/lDxjqTlIzQ1Iyv55BX7tghvmEQRQfmUEwIkzMBJXAcHCM=
