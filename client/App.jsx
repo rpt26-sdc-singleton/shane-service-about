@@ -12,10 +12,11 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <h1>Hello World!</h1>
+        <h1>About this Course</h1>
+        <h3>6,320,339 recent views</h3>
       </div>
     );
   }
 }
 
-ReactDOM.render(<App />, document.querySelector('body'));
+ReactDOM.render(<App />, document.querySelector('#about'));
