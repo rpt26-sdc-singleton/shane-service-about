@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const { Schema } = mongoose;
 
-mongoose.connect(process.env.MONGODB_URI_PROD, {
+mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
