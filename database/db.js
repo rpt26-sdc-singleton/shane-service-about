@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
-require('dotenv').config();
+
+if (process.env.NODE_ENV !== 'production' && !process.env.CI) {
+  // eslint-disable-next-line global-require
+  require('dotenv').config();
+}
 
 const { Schema } = mongoose;
 
@@ -10,6 +14,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', console.log.bind(console, 'connected!'));
 
 const descriptionSchema = new Schema({
   course_id: Number,

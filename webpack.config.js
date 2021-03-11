@@ -9,7 +9,21 @@ module.exports = {
     contentBase: './public',
     hot: true,
   },
-  plugins: [new HtmlWebpackPlugin()],
+  module: {
+    rules: [
+      {
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+        },
+      },
+    ],
+  },
+  plugins: [new HtmlWebpackPlugin({
+    title: 'Development',
+    template: './public/index.html',
+  })],
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'public'),
