@@ -4,15 +4,15 @@ const { descriptionSchema } = require('./db');
 const Description = mongoose.model('Description', descriptionSchema);
 
 module.exports = {
-  getOne: async (id) => {
-    console.log('ID', id);
-    Description.findOne({ course_id: id }, (err, doc) => {
-      if (err) {
-        throw err;
-      } else {
-        console.log(doc);
-        return doc;
-      }
-    });
-  },
+  getOne: (id) => (
+    new Promise((resolve, reject) => {
+      Description.findOne({ course_id: id }, (err, doc) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(doc);
+        }
+      });
+    })
+  ),
 };
