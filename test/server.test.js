@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 const request = require('supertest');
 const app = require('../server/index');
+const { db } = require('../database/db');
 
 describe('Server Configuration', () => {
   let server;
@@ -44,5 +45,9 @@ describe('Server Configuration', () => {
         .expect(200)
         .end(done);
     });
+  });
+
+  afterAll(async () => {
+    await db.close();
   });
 });
