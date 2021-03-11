@@ -3,13 +3,14 @@ require('dotenv').config();
 
 const { Schema } = mongoose;
 
-mongoose.connect(process.env.MONGODB_URI, {
+mongoose.connect(process.env.MONGODB_URI_PROD, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', console.log.bind(console, 'connected!'));
 
 const descriptionSchema = new Schema({
   course_id: Number,
