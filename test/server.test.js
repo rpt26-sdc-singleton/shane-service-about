@@ -18,6 +18,11 @@ describe('Server Configuration', () => {
         })
         .expect(200, done);
     });
+    test('Should respond with a 404 when the ID passed is not a number', (done) => {
+      server
+        .get('/api/about/not-a-number')
+        .expect(404, done);
+    });
     test('Should respond appropriately when a non-existent record is requested', (done) => {
       server
         .get('/api/about/330')
@@ -28,6 +33,15 @@ describe('Server Configuration', () => {
         .post('/api/about/1')
         .expect(405, done);
     });
-    test.todo('Should fail gracefully when an invalid route is requested');
+    test('Should fail gracefully when an invalid route is requested', (done) => {
+      server
+        .get('/this/route/does/not/exist')
+        .expect(404, done);
+    });
+    test('Should respond with 200 when requesting route /', (done) => {
+      server
+        .get('/')
+        .expect(200, done);
+    });
   });
 });

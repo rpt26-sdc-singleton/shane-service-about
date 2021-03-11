@@ -6,17 +6,21 @@ const PORT = 3002;
 
 app.use(express.static('./public'));
 
-app.get('/api/about/:id', async (req, res) => {
-  const data = await db.getOne(req.params.id);
-  if (!data) {
-    res.sendStatus(404);
-  } else {
-    res.send(data).status(200);
-  }
+app.get('/api/about/:id', (req, res) => {
+  db.getOne(req.params.id)
+    .then((data) => {
+      if (!data) {
+        res.sendStatus(404);
+      } else {
+        res.send(data).status(200);
+      }
+    })
+    .catch(() => {
+      res.sendStatus(404);
+    });
 });
 
 app.post('/api/about/:id', (req, res) => {
-  console.log('post');
   res.sendStatus(405);
 });
 
