@@ -13,7 +13,8 @@
     "react-start": "webpack serve --open",
     "build": "webpack",
     "test": "jest --coverage",
-    "test-debug": "jest --detectOpenHandles"
+    "test-debug": "jest --detectOpenHandles",
+    "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls"
   },
   "dependencies": {
     "axios": "^0.21.1",
