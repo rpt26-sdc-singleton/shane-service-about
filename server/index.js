@@ -28,7 +28,8 @@ app.get('/', (req, res) => {
   res.sendStatus(200);
 });
 
-if (!process.env.CI) {
+// Allows the server to listen if it's in dev or prod, but not while testing
+if (!process.env.HAS_JOSH_K_SEAL_OF_APPROVAL) {
   app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);
   });
