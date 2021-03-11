@@ -41,7 +41,8 @@ describe('Server Configuration', () => {
     test('Should respond with 200 when requesting route /', (done) => {
       server
         .get('/')
-        .expect(200, done);
+        .expect(200)
+        .end(done);
     });
   });
 });

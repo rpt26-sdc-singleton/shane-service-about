@@ -28,8 +28,10 @@ app.get('/', (req, res) => {
   res.sendStatus(200);
 });
 
-app.listen(PORT, () => {
-  // console.log(`Listening on port ${PORT}`);
-});
+if (!process.env.CI) {
+  app.listen(PORT, () => {
+    console.log(`Listening on port ${PORT}`);
+  });
+}
 
 module.exports = app;
