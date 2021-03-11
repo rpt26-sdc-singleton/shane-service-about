@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
-require('dotenv').config();
+
+if (process.env.NODE_ENV !== 'production' && !process.env.CI) {
+  // eslint-disable-next-line global-require
+  require('dotenv').config();
+}
 
 const { Schema } = mongoose;
 
