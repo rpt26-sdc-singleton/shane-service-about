@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const db = require('../database/model');
+const path = require('path');
 
 const app = express();
 const PORT = 3002;
@@ -27,8 +28,8 @@ app.post('/api/about/:id', (req, res) => {
   res.sendStatus(405);
 });
 
-app.get('/', (req, res) => {
-  res.sendStatus(200);
+app.get('/*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '../public/index.html'));
 });
 
 // Allows the server to listen if it's in dev or prod, but not while testing

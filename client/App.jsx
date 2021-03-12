@@ -12,8 +12,11 @@ class App extends React.Component {
   }
 
   componentDidMount() {
+    console.log(window.location.href.split('/'));
+    const pathItems = window.location.href.split('/');
+    const courseID = pathItems[pathItems.length - 1];
     console.log('fetching data...');
-    fetch('http://localhost:3002/api/about/1')
+    fetch(`http://localhost:3002/api/about/${courseID}`)
       .then((response) => response.json())
       .then((data) => {
         this.setState({ courseInfo: data });

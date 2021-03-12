@@ -6,6 +6,9 @@ module.exports = {
   entry: './client/App.jsx',
   devtool: 'inline-source-map',
   devServer: {
+    proxy: {
+      '/': 'http://localhost:3002'
+    },
     contentBase: './public',
     hot: true,
   },
