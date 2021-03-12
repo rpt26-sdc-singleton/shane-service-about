@@ -23,7 +23,7 @@ class App extends React.Component {
     return (
       <div>
         <h1>About this Course</h1>
-        <h3>6,320,339 recent views</h3>
+        <h3>{this.state.courseInfo.recent_views?.toLocaleString('en') || '0'} recent views</h3>
       </div>
     );
   }
