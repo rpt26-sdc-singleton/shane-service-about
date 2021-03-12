@@ -5,8 +5,18 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      test: 'here',
+      courseInfo: {},
     };
+  }
+
+  componentDidMount() {
+    console.log('fetching data...');
+    fetch('http://localhost:3002/api/about/1')
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState({ courseInfo: data });
+      })
+      .catch((err) => console.error(err));
   }
 
   render() {

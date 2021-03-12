@@ -1,12 +1,15 @@
 const express = require('express');
+const cors = require('cors');
 const db = require('../database/model');
 
 const app = express();
 const PORT = 3002;
 
+app.use(cors());
 app.use(express.static('./public'));
 
 app.get('/api/about/:id', (req, res) => {
+  console.log('new request for ', req.params.id);
   db.getOne(req.params.id)
     .then((data) => {
       if (!data) {
