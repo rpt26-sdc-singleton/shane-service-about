@@ -10,7 +10,6 @@ app.use(cors());
 app.use(express.static('./public'));
 
 app.get('/api/about/:id', (req, res) => {
-  console.log('new request for ', req.params.id);
   db.getOne(req.params.id)
     .then((data) => {
       if (!data) {
@@ -33,7 +32,7 @@ app.get('/*', (req, res) => {
 });
 
 // Allows the server to listen if it's in dev or prod, but not while testing
-if (!process.env.HAS_JOSH_K_SEAL_OF_APPROVAL) {
+if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);
   });
