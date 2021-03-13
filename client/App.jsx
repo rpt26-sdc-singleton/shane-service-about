@@ -18,9 +18,11 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    console.log(window.location.href.split('/'));
-    const pathItems = window.location.href.split('/');
-    let courseID = pathItems[pathItems.length - 1];
+    let courseID;
+    if (document) {
+      const pathItems = window.location.href.split('/');
+      courseID = pathItems[pathItems.length - 1];
+    }
     courseID = !courseID ? 1 : courseID;
     console.log('fetching data with course id ', courseID);
     fetch(`http://localhost:3002/api/about/${courseID}`)
