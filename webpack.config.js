@@ -7,7 +7,7 @@ module.exports = {
   devtool: 'inline-source-map',
   devServer: {
     proxy: {
-      '/': 'http://localhost:3002'
+      '/': 'http://localhost:3002',
     },
     contentBase: './public',
     hot: true,
@@ -20,6 +20,10 @@ module.exports = {
         use: {
           loader: 'babel-loader',
         },
+      },
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
       },
     ],
   },

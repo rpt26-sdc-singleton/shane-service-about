@@ -1,0 +1,17 @@
+body {
+  font-family: 'Open Sans', sans-serif;
+}
+
+.placeholder-circle {
+  height: 44px;
+  width: 44px;
+  border-radius: 50%;
+  background-color: darkgreen;
+  margin-right: 10px;
+}
+
+.data-set {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+}

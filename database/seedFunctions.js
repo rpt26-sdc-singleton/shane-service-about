@@ -128,7 +128,7 @@ const generateRecords = async (numToGenerate) => {
     console.log(`Creating record ${i}`);
     const item = {
       course_id: i, // 1 - 100
-      recent_views: Math.floor(Math.random() * 1000000), // Random number between 0 and 1 million
+      recent_views: Math.floor(Math.random() * 10000000), // Random number between 0 and 10 million
       description: await generateFillerText({ paras: 4 }), // Bacon ipsum - 4 paragraphs
       learner_career_outcomes: await generateLearnerCareerOutcomes(),
       metadata: await generateMetadata(),
