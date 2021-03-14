@@ -36,27 +36,33 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <h1>About this Course</h1>
-        <h3>{this.state.courseInfo.recent_views.toLocaleString('en')} recent views</h3>
-        <p>{this.state.courseInfo.description}</p>
-        <div className="skills">
-          <h3>Skills You Will Gain</h3>
-          <ul>
-            {this.state.courseInfo.skills_you_will_gain.map((skill) => <li>{skill}</li>)}
-          </ul>
+        <h2 className="title bold">About this Course</h2>
+        <div className="recent-views">
+          <span>{this.state.courseInfo.recent_views.toLocaleString('en')} recent views</span>
         </div>
+        {
+          this.state.courseInfo.description.split('\n').map((paragraph) => <p className="description">{paragraph}</p>)
+        }
         <div>
-          <div className="data-set">
-            <div className="placeholder-circle" />
-            <h3>Learner Career Outcomes</h3>
-          </div>
-          {this.state.courseInfo.learner_career_outcomes.map((set) => (
+          <div id="learner-career-outcomes">
             <div className="data-set">
               <div className="placeholder-circle" />
-              <h1>{`${Math.round(set.pct * 100)}%`}</h1>
-              <p>{set.outcome}</p>
+              <h3 className="meta-title">Learner Career Outcomes</h3>
             </div>
-          ))}
+            {this.state.courseInfo.learner_career_outcomes.map((set) => (
+              <div className="data-set">
+                <div className="icon-container">
+                  <div className="gradient-blue-green">
+                    <div className="icon-circle" />
+                  </div>
+                </div>
+                <div className="fact-set">
+                  <h2 className="outcomes-pct">{`${Math.round(set.pct * 100)}%`}</h2>
+                  <p className="outcomes-desc">{set.outcome}</p>
+                </div>
+              </div>
+            ))}
+          </div>
           {this.state.courseInfo.metadata.map((set) => (
             <div className="data-set">
               <div className="placeholder-circle" />
@@ -66,6 +72,12 @@ class App extends React.Component {
               </div>
             </div>
           ))}
+        </div>
+        <div className="skills">
+          <h3>Skills You Will Gain</h3>
+          <ul>
+            {this.state.courseInfo.skills_you_will_gain.map((skill) => <li>{skill}</li>)}
+          </ul>
         </div>
       </div>
     );

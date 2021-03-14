@@ -1,12 +1,94 @@
 body {
   font-family: 'Open Sans', sans-serif;
+  color: #373A3C;
+  box-sizing: border-box;
 }
 
-.placeholder-circle {
+/* GLOBAL STYLES */
+
+h2 {
+  font-size: 24px;
+  line-height: 30px;
+}
+
+p {
+  margin-bottom: 10px;
+}
+
+.bold {
+  font-weight: 700;
+}
+
+.title {
+  font-weight: 700;
+  color: #373A3C;
+  padding: 0;
+  margin: 0;
+}
+
+.meta-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 0 20px;
+  color: #373A3C;
+}
+
+.outcomes-pct {
+  font-size: 2.125rem;
+  line-height: 2.625rem;
+  font-weight: 200;
+  margin: 0 16px;
+}
+
+.outcomes-desc {
+  text-align: center;
+  font-size: .9rem;
+  margin: 0;
+}
+
+.recent-views {
+  font-size: 14px;
+  color: rgb(102, 102, 102);
+  font-weight: bold;
+}
+
+.description {
+  color: #373A3C;
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 400;
+  margin-bottom: 1rem;
+}
+
+.icon-container {
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.gradient-blue-green {
   height: 44px;
   width: 44px;
   border-radius: 50%;
-  background-color: darkgreen;
+  background-image: linear-gradient(
+90deg
+, rgb(72, 207, 173), rgb(59, 175, 218));
+}
+
+.icon-circle {
+  height: 44px;
+  width: 44px;
+}
+
+.placeholder-circle {
+  box-sizing: border-box;
+  height: 44px;
+  width: 44px;
+  border-radius: 50%;
+  background: transparent;
+  border: 2px solid rgb(225, 225, 225);
   margin-right: 10px;
 }
 
@@ -14,4 +96,16 @@ body {
   display: flex;
   align-items: center;
   justify-content: left;
+  margin-bottom: 16px;
+}
+
+.fact-set {
+  display: flex;
+  align-items: center;
+}
+
+#learner-career-outcomes {
+  background-color: rgb(248, 248, 248);
+  padding: 20px 25px 10px;
+  margin: 10px 0px;
 }
