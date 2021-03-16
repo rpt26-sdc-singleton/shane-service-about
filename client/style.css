@@ -2,6 +2,16 @@ body {
   font-family: 'Open Sans', sans-serif;
 }
 
+/* Detail Component */
+
+#detail h2 {
+  font-weight: 300;
+}
+
+#detail h3 {
+  font-weight: 300;
+}
+
 .placeholder-circle {
   height: 44px;
   width: 44px;
