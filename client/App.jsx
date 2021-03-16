@@ -3,6 +3,7 @@ import './style.css';
 
 import Detail from './components/detail/Detail.jsx';
 import Meta from './components/meta/Meta.jsx';
+import Skills from './components/skills/Skills.jsx';
 
 class App extends React.Component {
   constructor(props) {
@@ -42,6 +43,7 @@ class App extends React.Component {
       <div className="about">
         <Detail courseInfo={ courseInfo } />
         <Meta state={ courseInfo } />
+        <Skills state={ courseInfo }/>
       </div>
     );
   }
