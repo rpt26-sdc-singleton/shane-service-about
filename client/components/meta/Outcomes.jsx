@@ -10,10 +10,10 @@ const Outcomes = (props) => {
       </div>
       {state.learner_career_outcomes.map((outcome) => (
         <div className="outcome-set">
-          <div className="icon-background placeholder-circle">
+          <div className="icon-background">
             <div className="outcome-icon" />
           </div>
-          <h2>{`${Math.round(outcome.pct * 100)}%`}</h2>
+          <h2 className="outcome-pct">{`${Math.round(outcome.pct * 100)}%`}</h2>
           <h3>{outcome.outcome}</h3>
         </div>
       ))}

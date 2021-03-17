@@ -1,3 +1,5 @@
+/* Globals & Variables */
+
 :root {
   --main: #373A3C;
   --light-grey: #666;
@@ -7,6 +9,27 @@
 body {
   font-family: 'Open Sans', sans-serif;
   box-sizing: border-box;
+}
+
+.about {
+  display: flex;
+}
+
+.about .two-three {
+  margin: 24px 0 0 0;
+  padding: 0 12px;
+}
+
+.about .one-three {
+  padding: 0 12px;
+}
+
+.two-three {
+  width: 66.666vw;
+}
+
+.one-three {
+  width: 33.333vw;
 }
 
 /* Detail Component */
@@ -72,7 +95,14 @@ body {
 }
 
 /* Meta Component */
+/* Globals */
 
+#meta {
+  margin: 24px 0 0 0;
+  padding: 0 0 0 24px;
+}
+
+/* Meta */
 /* Outcomes */
 
 #outcomes {
@@ -86,6 +116,7 @@ body {
   color: var(--main);
   display: flex;
   align-items: center;
+  margin: 0 0 16px 0;
 }
 
 .outcomes-title-set h2 {
@@ -93,6 +124,25 @@ body {
   line-height: 21px;
   font-weight: 700;
   margin: 0 0 0 20px;
+}
+
+.icon-background,
+.outcome-icon {
+  height: 44px;
+  width: 44px;
+  border-radius: 50%;
+}
+
+.icon-background {
+  background-image: linear-gradient(
+90deg
+, rgb(72, 207, 173), rgb(59, 175, 218));
+}
+
+.icon-background {
+  background-image: linear-gradient(
+90deg
+, rgb(93, 156, 236), rgb(150, 122, 220));
 }
 
 .circle-outline {
@@ -106,15 +156,56 @@ body {
 .outcome-set {
   display: flex;
   align-items: center;
+  margin: 0 0 16px 0;
 }
 
-.outcome-set h2 {
+.outcome-pct {
   font-size: 34px;
   line-height: 1.25;
   font-weight: 300;
+  margin: 0 16px;
 }
 
+.outcome-set h3 {
+  font-size: .9rem;
+  font-weight: normal;
+  text-align: center;
+}
 
+/* Meta */
+/* Facts Component */
+
+.fact-set {
+  display: flex;
+  align-items: center;
+  padding: 8px 0 0;
+  margin: 0 0 24px;
+}
+
+.fact-set .circle {
+  margin: 0 16px 8px 8px;
+}
+
+.fact-set .circle-frame {
+  height: 44px;
+  width: 44px;
+}
+
+.fact-title {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 24px;
+  margin: 0;
+  padding: 0;
+}
+
+.fact-subtitle {
+  font-size: .9rem;
+  color: #6E767F;
+  font-weight: normal;
+  margin: 0;
+  padding: 0;
+}
 
 
 
@@ -131,7 +222,6 @@ body {
   width: 44px;
   border-radius: 50%;
   background-color: darkgreen;
-  margin-right: 10px;
 }
 
 .data-set {
