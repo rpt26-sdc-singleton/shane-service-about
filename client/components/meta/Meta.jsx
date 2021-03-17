@@ -5,7 +5,7 @@ import Facts from './Facts.jsx';
 const Meta = (props) => {
   const { state } = props;
   return (
-    <div id="detail">
+    <div id="meta">
       <Outcomes state={state} />
       <Facts state={state} />
     </div>

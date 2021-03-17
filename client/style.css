@@ -1,20 +1,77 @@
+:root {
+  --main: #373A3C;
+  --light-grey: #666;
+  --border-grey: #E3E4E5;
+}
+
 body {
   font-family: 'Open Sans', sans-serif;
+  box-sizing: border-box;
 }
 
 /* Detail Component */
 
 #detail h2 {
-  font-weight: 300;
+  margin: 0;
+  padding: 0;
+  font-weight: 700;
+  font-size: 24px;
+  color: var(--main);
+  box-sizing: border-box;
 }
 
 #detail h3 {
-  font-weight: 300;
+  font-weight: 700;
+  color: var(--light-grey);
+  font-size: 14px;
+  margin: 0;
+  padding: 0;
 }
 
 .description {
-  font-weight: 300;
+  font-size: 14px;
+  line-height: 21px;
+  color: var(--main);
 }
+
+/* Skills Component */
+
+.skills {
+  margin: 24px 0;
+  padding: 16px 24px 24px;
+  border: 1px solid var(--border-grey);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+}
+
+.skills h2 {
+  margin: 0 0 24px 0;
+  font-size: 14px;
+  line-height: 24px;
+  text-transform: uppercase;
+  color: #6E767F;
+}
+
+.skills-list {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.skill-name {
+  font-size: 14px;
+  line-height: 24px;
+  color: #1F1F1F;
+  border-radius: 30px;
+  background-color: #EBECED;
+  margin: 0 8px 8px 0;
+  padding: 3px 18px 3px 18px;
+  list-style-type: none;
+}
+
+
 
 .placeholder-circle {
   height: 44px;
