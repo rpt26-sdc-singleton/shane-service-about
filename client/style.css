@@ -71,6 +71,59 @@ body {
   list-style-type: none;
 }
 
+/* Meta Component */
+
+/* Outcomes */
+
+#outcomes {
+  color: var(--main);
+  background-color: #F8F8F8;
+  margin: 10px 0;
+  padding: 20px 25px 10px;
+}
+
+.outcomes-title-set {
+  color: var(--main);
+  display: flex;
+  align-items: center;
+}
+
+.outcomes-title-set h2 {
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 700;
+  margin: 0 0 0 20px;
+}
+
+.circle-outline {
+  height: 44px;
+  width: 44px;
+  border: 2px solid #E1E1E1;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+.outcome-set {
+  display: flex;
+  align-items: center;
+}
+
+.outcome-set h2 {
+  font-size: 34px;
+  line-height: 1.25;
+  font-weight: 300;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 .placeholder-circle {
