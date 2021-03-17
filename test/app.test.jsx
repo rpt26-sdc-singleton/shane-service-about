@@ -30,7 +30,7 @@ describe('Should render the About component', () => {
     expect(wrapper.state().courseInfo.course_id).toBe(3);
     expect(wrapper.state().courseInfo.description).toBe(stateMock.courseInfo.description);
   });
-  test('Should contain data sets', () => {
-    expect(wrapper.find('.data-set').length).toBeGreaterThan(0);
-  });
+  test.todo('Should contain data sets');
+  test.todo('Should render 3 divs for Description, Skills, Other data');
+  test.todo('Should render the correct number of skills');
 });
