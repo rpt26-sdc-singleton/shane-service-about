@@ -12,6 +12,10 @@ body {
   font-weight: 300;
 }
 
+.description {
+  font-weight: 300;
+}
+
 .placeholder-circle {
   height: 44px;
   width: 44px;

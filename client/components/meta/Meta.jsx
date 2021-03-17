@@ -1,10 +1,15 @@
 import React from 'react';
+import Outcomes from './Outcomes.jsx';
+import Facts from './Facts.jsx';
 
-const Meta = (props) => (
-  <div id="detail">
-    <div className="placeholder-circle" />
-    <h3>Learner Career Outcomes</h3>
-  </div>
-);
+const Meta = (props) => {
+  const { state } = props;
+  return (
+    <div id="detail">
+      <Outcomes state={state} />
+      <Facts state={state} />
+    </div>
+  );
+};
 
 export default Meta;

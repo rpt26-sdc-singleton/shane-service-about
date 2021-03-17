@@ -41,9 +41,9 @@ class App extends React.Component {
     const { courseInfo } = this.state;
     return (
       <div className="about">
-        <Detail courseInfo={ courseInfo } />
-        <Meta state={ courseInfo } />
-        <Skills state={ courseInfo }/>
+        <Detail state={courseInfo} />
+        <Skills state={courseInfo} />
+        <Meta state={courseInfo} />
       </div>
     );
   }
