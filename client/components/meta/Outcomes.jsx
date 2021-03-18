@@ -16,7 +16,7 @@ const Outcomes = (props) => {
         <h2>Learner Career Outcomes</h2>
       </div>
       {state.learner_career_outcomes.map((outcome) => (
-        <div className="outcome-set">
+        <div key={outcome.icon} className="outcome-set">
           <div className={`icon-background ${outcome.icon}`}>
             <div className="outcome-icon" />
           </div>

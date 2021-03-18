@@ -5,7 +5,7 @@ const Facts = (props) => {
   return (
     <div id="facts">
       {state.metadata.map((set) => (
-        <div key={set._id} className="fact-set">
+        <div key={set.title} className="fact-set">
           <div>
             <div className="circle circle-outline" />
           </div>

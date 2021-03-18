@@ -6,7 +6,7 @@ const Skills = (props) => {
     <div className="skills">
       <h2>Skills You Will Gain</h2>
       <ul className="skills-list">
-        {state.skills_you_will_gain.map((skill) => <li className="skill-name">{skill}</li>)}
+        {state.skills_you_will_gain.map((skill) => <li key={skill} className="skill-name">{skill}</li>)}
       </ul>
     </div>
   );
