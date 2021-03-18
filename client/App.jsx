@@ -32,6 +32,7 @@ class App extends React.Component {
     fetch(`http://localhost:3002/api/about/${courseID}`)
       .then((response) => response.json())
       .then((data) => {
+        console.log('received data:', (typeof data), data);
         this.setState({ courseInfo: data });
       })
       .catch((err) => console.error(err));
