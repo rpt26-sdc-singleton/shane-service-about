@@ -31,6 +31,7 @@ describe('Should render the About component', () => {
     expect(wrapper.state().courseInfo.description).toBe(newStateMock.courseInfo.description);
   });
   test('Should render the correct number of skills', () => {
+    // Using newStateMock, then switching back to original
     expect(wrapper.find('.skill-name').length).toBe(2);
     wrapper.setState({ courseInfo: stateMock.courseInfo });
     expect(wrapper.find('.skill-name').length).toBe(3);
