@@ -142,7 +142,7 @@ const generateRecords = async (numToGenerate) => {
 
 const seedDatabase = async (Description) => {
   console.time('Database Seed');
-  const records = await generateRecords(5);
+  const records = await generateRecords(100);
   Description.insertMany(records, (err, res) => {
     if (err) {
       console.error(err);

@@ -11,7 +11,7 @@ describe('Should seed database with realistic data', () => {
   test('Should generate random metadata', async (done) => {
     const metadata = await seedFunctions.generateMetadata();
     expect(metadata.length).toBe(5);
-    expect(metadata[0].icon).toBe('certificate');
+    expect(metadata[0].icon).toBe('sharableCertificateSVG');
     expect(Array.isArray(metadata)).toBeTruthy();
     done();
   });
