@@ -3,11 +3,11 @@ import Outcomes from './Outcomes.jsx';
 import Facts from './Facts.jsx';
 
 const Meta = (props) => {
-  const { state } = props;
+  const { state, svgs } = props;
   return (
     <div id="meta">
-      <Outcomes state={state} />
-      <Facts state={state} />
+      <Outcomes state={state} svgs={svgs} />
+      <Facts state={state} svgs={svgs} />
     </div>
   );
 };

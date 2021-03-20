@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Facts = (props) => {
-  const { state } = props;
+  const { state, svgs } = props;
   return (
     <div id="facts">
       {state.metadata.map((set) => (

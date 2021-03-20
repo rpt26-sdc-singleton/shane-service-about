@@ -18,6 +18,7 @@ class App extends React.Component {
         what_you_will_learn: [],
         skills_you_will_gain: [],
       },
+      svgs: {}
     };
   }
 
@@ -35,10 +36,16 @@ class App extends React.Component {
         this.setState({ courseInfo: data });
       })
       .catch((err) => console.error(err));
+    fetch('http://localhost:3006/api/svgs')
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        this.setState({ svgs: data })
+      })
   }
 
   render() {
-    const { courseInfo } = this.state;
+    const { courseInfo, svgs } = this.state;
     return (
       <div className="about">
         <div className="two-three">
@@ -46,7 +53,7 @@ class App extends React.Component {
           <Skills state={courseInfo} />
         </div>
         <div className="one-three">
-          <Meta state={courseInfo} />
+          <Meta state={courseInfo} svgs={svgs} />
         </div>
       </div>
     );
