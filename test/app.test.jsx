@@ -2,7 +2,7 @@
 import React from 'react';
 import enzyme from 'enzyme';
 import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
-import App from '../client/App';
+import About from '../client/About';
 import fixtures from './fixtures';
 
 enzyme.configure({ adapter: new Adapter() });
@@ -13,7 +13,7 @@ describe('Should render the About component', () => {
 
   beforeAll(() => {
     fetch.mockResponse(JSON.stringify({ ...stateMock.courseInfo }));
-    wrapper = enzyme.mount(<App />);
+    wrapper = enzyme.mount(<About />);
   });
 
   afterAll(() => {
