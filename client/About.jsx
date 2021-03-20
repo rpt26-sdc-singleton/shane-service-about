@@ -5,7 +5,7 @@ import Detail from './components/detail/Detail.jsx';
 import Meta from './components/meta/Meta.jsx';
 import Skills from './components/skills/Skills.jsx';
 
-class App extends React.Component {
+class About extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -60,4 +60,4 @@ class App extends React.Component {
   }
 }
 
-export default App;
+export default About;
