@@ -7,7 +7,11 @@ const Facts = (props) => {
       {state.metadata.map((set) => (
         <div key={set.title} className="fact-set">
           <div>
-            <div className="circle circle-outline" />
+            <div className="circle circle-outline">
+              <svg className="fact-icon" viewBox="0 0 48 48">
+                <path d={svgs[set.icon]} role="presentation" />
+              </svg>
+            </div>
           </div>
           <div>
             <h2 className="fact-title">{set.title}</h2>

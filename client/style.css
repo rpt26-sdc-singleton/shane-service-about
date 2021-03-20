@@ -141,29 +141,35 @@ svg {
 }
 
 .icon-background,
-.outcome-icon {
+.icon-container {
   height: 44px;
   width: 44px;
   border-radius: 50%;
+}
+
+.outcome-icon {
+  height: 22px;
+  width: 22px;
+  fill: white;
 }
 
 .user-icon {
   fill: rgb(32, 88, 157);
 }
 
-.signpost {
+.careerDirectionSVG {
   background-image: linear-gradient(
 90deg
 , rgb(72, 207, 173), rgb(59, 175, 218));
 }
 
-.briefcase {
+.careerBenefitSVG {
   background-image: linear-gradient(
 90deg
 , rgb(93, 156, 236), rgb(150, 122, 220));
 }
 
-.money {
+.careerPromotionSVG {
   background-image: linear-gradient(
 90deg
 , rgb(160, 212, 104), rgb(55, 188, 155));
@@ -230,6 +236,12 @@ svg {
   font-weight: normal;
   margin: 0;
   padding: 0;
+}
+
+.fact-icon {
+  height: 20px;
+  width: 20px;
+  fill: rgb(140, 21, 21)
 }
 
 

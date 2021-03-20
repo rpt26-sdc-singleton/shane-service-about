@@ -47,17 +47,17 @@ const generateLanguageList = () => {
 const generateLearnerCareerOutcomes = () => {
   const outcomes = [
     {
-      icon: 'signpost',
+      icon: 'careerDirectionSVG',
       pct: generateRandomPercentage(),
       outcome: 'started a new career after completing these courses',
     },
     {
-      icon: 'briefcase',
+      icon: 'careerBenefitSVG',
       pct: generateRandomPercentage(),
       outcome: 'got a tangible career benefit from this course',
     },
     {
-      icon: 'money',
+      icon: 'careerPromotionSVG',
       pct: generateRandomPercentage(),
       outcome: 'got a pay increase or promotion',
     },
@@ -71,27 +71,27 @@ const generateMetadata = () => {
   const subtitleLanguages = `Subtitles: ${generateLanguageList().join(', ')}`;
   const icons = [
     {
-      icon: 'certificate',
+      icon: 'sharableCertificateSVG',
       title: 'Shareable Certificate',
       subtitle: 'Earn a Certificate upon completion',
     },
     {
-      icon: 'globe',
+      icon: 'onlineSVG',
       title: '100% online',
       subtitle: 'Start instantly and learn at your own schedule',
     },
     {
-      icon: 'calendar',
+      icon: 'deadlinesSVG',
       title: 'Flexible Deadlines',
       subtitle: 'Reset deadlines in accordance to your schedule',
     },
     {
-      icon: 'clock',
+      icon: 'hoursSVG',
       title: `Approx. ${randomHours} hours to complete`,
       subtitle: '',
     },
     {
-      icon: 'speechbubble',
+      icon: 'languagesSVG',
       title: 'English',
       subtitle: subtitleLanguages,
     },
@@ -142,7 +142,7 @@ const generateRecords = async (numToGenerate) => {
 
 const seedDatabase = async (Description) => {
   console.time('Database Seed');
-  const records = await generateRecords(100);
+  const records = await generateRecords(5);
   Description.insertMany(records, (err, res) => {
     if (err) {
       console.error(err);
