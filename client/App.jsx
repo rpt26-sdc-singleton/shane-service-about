@@ -1,6 +1,10 @@
 import React from 'react';
 import './style.css';
 
+import Detail from './components/detail/Detail.jsx';
+import Meta from './components/meta/Meta.jsx';
+import Skills from './components/skills/Skills.jsx';
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -34,38 +38,15 @@ class App extends React.Component {
   }
 
   render() {
+    const { courseInfo } = this.state;
     return (
-      <div>
-        <h1>About this Course</h1>
-        <h3>{this.state.courseInfo.recent_views.toLocaleString('en')} recent views</h3>
-        <p>{this.state.courseInfo.description}</p>
-        <div className="skills">
-          <h3>Skills You Will Gain</h3>
-          <ul>
-            {this.state.courseInfo.skills_you_will_gain.map((skill) => <li>{skill}</li>)}
-          </ul>
+      <div className="about">
+        <div className="two-three">
+          <Detail state={courseInfo} />
+          <Skills state={courseInfo} />
         </div>
-        <div>
-          <div className="data-set">
-            <div className="placeholder-circle" />
-            <h3>Learner Career Outcomes</h3>
-          </div>
-          {this.state.courseInfo.learner_career_outcomes.map((set) => (
-            <div className="data-set">
-              <div className="placeholder-circle" />
-              <h1>{`${Math.round(set.pct * 100)}%`}</h1>
-              <p>{set.outcome}</p>
-            </div>
-          ))}
-          {this.state.courseInfo.metadata.map((set) => (
-            <div className="data-set">
-              <div className="placeholder-circle" />
-              <div className="title-subtitle">
-                <h2>{set.title}</h2>
-                <p>{set.subtitle}</p>
-              </div>
-            </div>
-          ))}
+        <div className="one-three">
+          <Meta state={courseInfo} />
         </div>
       </div>
     );

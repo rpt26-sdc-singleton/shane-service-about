@@ -3,34 +3,48 @@ import React from 'react';
 import enzyme from 'enzyme';
 import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import App from '../client/App';
+import fixtures from './fixtures';
 
 enzyme.configure({ adapter: new Adapter() });
 
 describe('Should render the About component', () => {
   let wrapper;
-  const stateMock = {
-    courseInfo: {
-      course_id: 3,
-      recent_views: 1738,
-      description: 'Officia lorem labore landjaeger sunt culpa sed sint ball tip magna',
-      learner_career_outcomes: [{ icon: 'signpost', pct: 0.51, outcome: 'started a new career after completing these courses' }],
-      metadata: [{ icon: 'certificate', title: 'Shareable Certificate', subtitle: 'Earn a Certificate upon completion' }],
-      what_you_will_learn: [],
-      skills_you_will_gain: [],
-    },
-  };
+  const stateMock = fixtures.stateMock1;
 
   beforeAll(() => {
-    wrapper = enzyme.shallow(<App />, { disableLifecycleMethods: true });
+    fetch.mockResponse(JSON.stringify({ ...stateMock.courseInfo }));
+    wrapper = enzyme.mount(<App />);
+  });
+
+  afterAll(() => {
+    wrapper.unmount();
   });
 
   test('Should re-render when a new document is loaded', () => {
-    expect(wrapper.state().courseInfo.course_id).toBe(0);
-    wrapper.setState({ courseInfo: stateMock.courseInfo });
+    // componentDidMount() calls the above mocked response which returns a fake state with id 3
+    // Test initial case
     expect(wrapper.state().courseInfo.course_id).toBe(3);
-    expect(wrapper.state().courseInfo.description).toBe(stateMock.courseInfo.description);
+    // Set state to new mock
+    const newStateMock = fixtures.stateMock2;
+    wrapper.setState({ courseInfo: newStateMock.courseInfo });
+    expect(wrapper.state().courseInfo.course_id).toBe(2);
+    expect(wrapper.state().courseInfo.description).toBe(newStateMock.courseInfo.description);
   });
-  test('Should contain data sets', () => {
-    expect(wrapper.find('.data-set').length).toBeGreaterThan(0);
+  test('Should render the correct number of skills', () => {
+    // Using newStateMock
+    expect(wrapper.find('.skill-name').length).toBe(2);
+    // Manually change state
+    wrapper.setState({ courseInfo: stateMock.courseInfo });
+    expect(wrapper.find('.skill-name').length).toBe(3);
+  });
+  test('Should render 3 divs for Description, Skills, Other data', () => {
+    expect(wrapper.find('.about').children().length).toBe(2);
+    // Below class is 2/3 of the screen and contains detail/skills
+    expect(wrapper.find('.two-three').children().length).toBe(2);
+    // Sidebar, 1/2 of the screen and contains the Outcomes
+    expect(wrapper.find('.one-three').children().length).toBe(1);
+  });
+  test('Should render fact-sets', () => {
+    expect(wrapper.find('.fact-set').length).toBeGreaterThan(0);
   });
 });
