@@ -38,14 +38,6 @@ body {
   width: 33.333vw;
 }
 
-svg {
-  position: relative;
-  height: 20px;
-  width: 20px;
-  top: 25%;
-  left: 25%;
-}
-
 /* Detail Component */
 
 #detail h2 {
@@ -57,7 +49,7 @@ svg {
   box-sizing: border-box;
 }
 
-#detail h3 {
+.recent-views {
   font-weight: 700;
   color: var(--light-grey);
   font-size: 14px;
@@ -133,7 +125,17 @@ svg {
   margin: 0 0 16px 0;
 }
 
-.outcomes-title-set h2 {
+.outcomes-title-set-icon {
+  position: relative;
+  top: 25%;
+  left: 25%;
+  display: block;
+  height: 20px;
+  width: 20px;
+  margin: 0;
+}
+
+.outcomes-title-set-title {
   font-size: 14px;
   line-height: 21px;
   font-weight: 700;
@@ -151,6 +153,9 @@ svg {
   height: 22px;
   width: 22px;
   fill: white;
+  position: relative;
+  top: 25%;
+  left: 25%;
 }
 
 .user-icon {
@@ -197,7 +202,7 @@ svg {
   margin: 0 16px;
 }
 
-.outcome-set h3 {
+.outcome-subtitle {
   font-size: .9rem;
   font-weight: normal;
   text-align: center;
@@ -241,28 +246,8 @@ svg {
 .fact-icon {
   height: 20px;
   width: 20px;
-  fill: rgb(140, 21, 21)
-}
-
-
-
-
-
-
-
-
-
-
-
-.placeholder-circle {
-  height: 44px;
-  width: 44px;
-  border-radius: 50%;
-  background-color: darkgreen;
-}
-
-.data-set {
-  display: flex;
-  align-items: center;
-  justify-content: left;
+  fill: rgb(140, 21, 21);
+  position: relative;
+  top: 25%;
+  left: 25%;
 }

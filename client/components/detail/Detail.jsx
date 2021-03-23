@@ -5,7 +5,7 @@ const Detail = (props) => {
   return (
     <div id="detail">
       <h2>About this Course</h2>
-      <h3>
+      <h3 className="recent-views">
         {`${state.recent_views.toLocaleString('en')} recent views`}
       </h3>
       <div className="description expandable">

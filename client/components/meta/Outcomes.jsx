@@ -5,15 +5,15 @@ const Outcomes = (props) => {
   return (
     <div id="outcomes">
       <div className="outcomes-title-set">
-        <div className="outcome-icon">
-          <div className="circle-outline">
+        <div className="circle-outline">
+          <div className="outcomes-title-set-icon">
             <svg className="user-icon" viewBox="0 0 48 48">
               <path d={svgs.userSVG?.body || ''} role="presentation" />
               <path d={svgs.userSVG?.head || ''} role="presentation" />
             </svg>
           </div>
         </div>
-        <h2>Learner Career Outcomes</h2>
+        <p className="outcomes-title-set-title">Learner Career Outcomes</p>
       </div>
       {state.learner_career_outcomes.map((outcome) => (
         <div key={outcome.icon} className="outcome-set">
@@ -26,7 +26,7 @@ const Outcomes = (props) => {
             </div>
           </div>
           <h2 className="outcome-pct">{`${Math.round(outcome.pct * 100)}%`}</h2>
-          <h3>{outcome.outcome}</h3>
+          <h3 className="outcome-subtitle">{outcome.outcome}</h3>
         </div>
       ))}
     </div>
