@@ -9,6 +9,7 @@
   },
   "scripts": {
     "server-start": "nodemon ./server/index.js",
+    "start": "node ./server/index.js",
     "watch": "webpack --watch",
     "react-start": "webpack serve --open",
     "build": "webpack",
