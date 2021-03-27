@@ -1,9 +1,10 @@
-FROM node:12.18-alpine
+FROM node:14
 ENV NODE_ENV=production
-RUN mkdir -p /app
-WORKDIR /app
-COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", "./"]
-RUN npm install --production --silent && mv node_modules ../
+ENV ABOUT_MONGODB_URI="mongodb://localhost:27017/about"
+WORKDIR /usr/src/app
+COPY package*.json ./
+RUN npm install
 COPY . .
 EXPOSE 3002
-CMD ["npm", "start"]
+RUN pwd
+CMD ["npm", "run", "start"]
