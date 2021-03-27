@@ -9,7 +9,7 @@ const Facts = (props) => {
           <div>
             <div className="circle circle-outline">
               <svg className="fact-icon" viewBox="0 0 48 48">
-                <path fill-rule={set.icon === "sharableCertificateSVG" ? "evenodd" : ""} d={svgs[set.icon]} role="presentation" />
+                <path fillRule={set.icon === "sharableCertificateSVG" ? "evenodd" : ""} d={svgs[set.icon]} role="presentation" />
               </svg>
             </div>
           </div>

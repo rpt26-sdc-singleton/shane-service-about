@@ -12,7 +12,7 @@
     "start": "node ./server/index.js",
     "watch": "webpack --watch",
     "react-start": "webpack serve --open",
-    "build": "webpack",
+    "build": "webpack && docker build -t shanesutro/service-about .",
     "test": "jest --coverage",
     "test-debug": "jest --detectOpenHandles",
     "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls"
