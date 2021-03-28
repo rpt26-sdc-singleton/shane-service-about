@@ -18,7 +18,7 @@ class About extends React.Component {
         what_you_will_learn: [],
         skills_you_will_gain: [],
       },
-      svgs: {}
+      svgs: {},
     };
   }
 
@@ -30,13 +30,13 @@ class About extends React.Component {
     }
     courseID = !courseID ? 1 : courseID;
     console.log('fetching data with course id ', courseID);
-    fetch(`http://localhost:3002/api/about/${courseID}`)
+    fetch(`/api/about/${courseID}`)
       .then((response) => response.json())
       .then((data) => {
         this.setState({ courseInfo: data });
       })
       .catch((err) => console.error(err));
-    fetch('http://localhost:3006/api/svgs')
+    fetch('/api/svgs')
       .then(response => response.json())
       .then(data => {
         console.log(data);
