@@ -29,14 +29,14 @@ class About extends React.Component {
       courseID = pathItems[pathItems.length - 1];
     }
     courseID = !courseID ? 1 : courseID;
-    console.log('fetching data with course id ', courseID);
-    fetch(`http://localhost:80/api/about/${courseID}`)
+    console.log('fetching data with course id', courseID);
+    fetch(`http://18.188.13.28:80/api/about/${courseID}`)
       .then((response) => response.json())
       .then((data) => {
         this.setState({ courseInfo: data });
       })
       .catch((err) => console.error(err));
-    fetch('/api/svgs')
+    fetch('http://18.188.13.28/api/svgs')
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
