@@ -30,18 +30,18 @@ class About extends React.Component {
     }
     courseID = !courseID ? 1 : courseID;
     console.log('fetching data with course id ', courseID);
-    fetch(`/api/about/${courseID}`)
+    fetch(`http://localhost:80/api/about/${courseID}`)
       .then((response) => response.json())
       .then((data) => {
         this.setState({ courseInfo: data });
       })
       .catch((err) => console.error(err));
     fetch('/api/svgs')
-      .then(response => response.json())
-      .then(data => {
+      .then((response) => response.json())
+      .then((data) => {
         console.log(data);
-        this.setState({ svgs: data })
-      })
+        this.setState({ svgs: data });
+      });
   }
 
   render() {
