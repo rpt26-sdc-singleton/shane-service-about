@@ -10,6 +10,7 @@ app.use(cors());
 app.use(express.static('./public'));
 
 app.get('/api/about/:id', (req, res) => {
+  console.log('New request for', req.params.id);
   db.getOne(req.params.id)
     .then((data) => {
       if (!data) {
