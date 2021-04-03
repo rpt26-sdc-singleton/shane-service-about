@@ -40,7 +40,6 @@ class About extends React.Component {
     fetch('http://3.20.191.60/api/svgs')
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         this.setState({ svgs: data });
       });
   }
