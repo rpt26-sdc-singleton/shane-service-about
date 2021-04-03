@@ -69,8 +69,16 @@ body {
   transition: max-height 1s ease-in-out;
 }
 
+.expandable:hover {
+  cursor: pointer;
+}
+
 div.expanded {
   max-height: 1500px;
+}
+
+div.expanded:hover {
+  cursor: text;
 }
 
 .show-more-button button {
