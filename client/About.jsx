@@ -19,6 +19,7 @@ class About extends React.Component {
         skills_you_will_gain: [],
       },
       svgs: {},
+      expanded: '',
     };
   }
 
@@ -39,17 +40,20 @@ class About extends React.Component {
     fetch('http://3.20.191.60/api/svgs')
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         this.setState({ svgs: data });
       });
   }
 
+  expand() {
+    this.setState({ expanded: 'expanded' });
+  }
+
   render() {
-    const { courseInfo, svgs } = this.state;
+    const { courseInfo, svgs, expanded } = this.state;
     return (
       <div className="about">
         <div className="two-three">
-          <Detail state={courseInfo} />
+          <Detail state={courseInfo} expanded={expanded} click={() => { this.expand(); }} />
           <Skills state={courseInfo} />
         </div>
         <div className="one-three">

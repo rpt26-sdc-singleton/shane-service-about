@@ -47,4 +47,11 @@ describe('Should render the About component', () => {
   test('Should render fact-sets', () => {
     expect(wrapper.find('.fact-set').length).toBeGreaterThan(0);
   });
+  test('Should add class .expanded when SHOW ALL is clicked', () => {
+    const descriptionDiv = wrapper.find('.description');
+    expect(descriptionDiv.hasClass('expanded')).toBeFalsy();
+    expect(wrapper.find('.expanded').length).toBe(0);
+    wrapper.find('.show-more-button button').simulate('click');
+    expect(wrapper.find('.expanded').length).toBe(2);
+  });
 });

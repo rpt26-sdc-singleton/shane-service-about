@@ -63,6 +63,44 @@ body {
   color: var(--main);
 }
 
+.expandable {
+  max-height: 100px;
+  overflow: hidden;
+  transition: max-height 1s ease-in-out;
+}
+
+.expandable:hover {
+  cursor: pointer;
+}
+
+div.expanded {
+  max-height: 1500px;
+}
+
+div.expanded:hover {
+  cursor: text;
+}
+
+.show-more-button button {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background-color: transparent;
+  color: #2a73cc;
+}
+
+.show-more-button button:hover {
+  color: #014C8C;
+  text-decoration: underline;
+}
+
+.expanded button {
+  display: none;
+}
+
 /* Skills Component */
 
 .skills {
