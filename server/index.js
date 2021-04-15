@@ -1,4 +1,5 @@
 const express = require('express');
+const shrinkRay = require('shrink-ray-current');
 const cors = require('cors');
 const path = require('path');
 const db = require('../database/model');
@@ -6,6 +7,7 @@ const db = require('../database/model');
 const app = express();
 const PORT = 3002;
 
+app.use(shrinkRay());
 app.use(cors());
 app.use(express.static('./public'));
 
