@@ -1,6 +1,8 @@
 /* eslint-disable no-await-in-loop */
 const axios = require('axios');
 
+const fillerText = {};
+
 const generateRandomPercentage = () => (Math.floor(Math.random() * 100) / 100);
 
 const generateNumberWithinRange = (min, max) => (Math.floor(Math.random() * (max - min) + min));
@@ -8,10 +10,16 @@ const generateNumberWithinRange = (min, max) => (Math.floor(Math.random() * (max
 const generateFillerText = async (options) => {
   let text;
   if (options.paras) {
-    text = await axios.get(`https://baconipsum.com/api/?type=meat-and-filler&paras=${options.paras}&format=text`);
+    if (fillerText[options.paras] !== undefined) {
+      text = fillerText[options.paras];
+    } else {
+      text = await axios.get(`https://baconipsum.com/api/?type=meat-and-filler&paras=${options.paras}&format=text`);
+      fillerText[options.paras] = text;
+    }
   } else if (options.sentences) {
     text = await axios.get(`https://baconipsum.com/api/?type=meat-and-filler&sentences=${options.sentences}&format=text`);
   }
+
   return text.data;
 };
 

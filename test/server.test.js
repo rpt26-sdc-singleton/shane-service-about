@@ -29,10 +29,10 @@ describe('Server Configuration', () => {
         .get('/api/about/330')
         .expect(404, done);
     });
-    test('Should respond with an 405 Method Not Allowed when a POST request is made', (done) => {
+    test('Should respond with a 201 status code when a POST request is made', (done) => {
       server
         .post('/api/about/1')
-        .expect(405, done);
+        .expect(201, done);
     });
     test('Should fail gracefully by serving index.html when an invalid route is requested', (done) => {
       server
