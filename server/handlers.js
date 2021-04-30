@@ -26,7 +26,29 @@ module.exports = {
     res.sendStatus(201);
   },
   // modifyListing: (req, res) => {},
-  // deleteListing: (req, res) => {},
+  removeListing: async (req, res) => {
+    const { id } = req.params;
+
+    if (!id || Number.isNaN(Number(id))) {
+      res.sendStatus(404);
+      return;
+    }
+
+    try {
+      await db.removeListing(id);
+    } catch (err) {
+      console.log(err);
+
+      if (err === 'id must be of type number') {
+        res.sendStatus(404);
+
+        return;
+      }
+    }
+
+    console.log(`removed listing ${id}`);
+    res.sendStatus(204);
+  },
   getListing: async (req, res) => {
     const { id } = req.params;
     console.log('New request for', id);
@@ -39,7 +61,7 @@ module.exports = {
     let data = null;
 
     try {
-      data = await db.getOne(req.params.id);
+      data = await db.getOne(id);
     } catch (err) {
       console.log(err);
 

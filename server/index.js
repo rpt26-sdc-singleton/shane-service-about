@@ -11,7 +11,9 @@ app.use(express.static('./public'));
 
 app.get('/api/about/:id', handlers.getListing);
 
-app.post('/api/about/:id', handlers.createListing);
+app.post('/api/about', handlers.createListing);
+
+app.delete('/api/about/:id', handlers.removeListing);
 
 app.get('/*', (req, res) => {
   res.sendFile(path.resolve(__dirname, '../public/index.html'));

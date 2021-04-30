@@ -50,4 +50,16 @@ module.exports = {
 
     return listing;
   },
+
+  removeListing: async (id) => {
+    if (!id) {
+      throw new Error('id is required');
+    } else if (Number.isNaN(id)) {
+      throw new Error('id must be of type number');
+    }
+
+    await Description.deleteOne({
+      course_id: id,
+    });
+  },
 };
