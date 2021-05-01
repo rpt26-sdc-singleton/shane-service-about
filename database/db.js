@@ -17,16 +17,26 @@ db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', console.log.bind(console, 'connected!'));
 
 const descriptionSchema = new Schema({
-  course_id: Number,
-  recent_views: Number,
-  description: String,
-  learner_career_outcomes: [{ icon: String, pct: Number, outcome: String }],
-  metadata: [{ icon: String, title: String, subtitle: String }],
+  course_id: { type: Number, required: true },
+  recent_views: { type: Number, required: true },
+  description: { type: String, required: true },
+  learner_career_outcomes: [{
+    icon: { type: String, required: true },
+    pct: { type: Number, required: true },
+    outcome: { type: String, required: true },
+  }],
+  metadata: [{
+    icon: { type: String, required: true },
+    title: { type: String, required: true },
+    subtitle: { type: String, required: true },
+  }],
   what_you_will_learn: [{
     type: String,
+    required: true,
   }],
   skills_you_will_gain: [{
     type: String,
+    required: true,
   }],
 });
 
