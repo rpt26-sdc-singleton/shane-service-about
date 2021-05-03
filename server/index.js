@@ -8,10 +8,13 @@ const PORT = 3002;
 
 app.use(cors());
 app.use(express.static('./public'));
+app.use(express.json());
 
 app.get('/api/about/:id', handlers.getListing);
 
-app.post('/api/about', handlers.createListing);
+app.post('/api/about/:id', handlers.createListing);
+
+app.put('/api/about/:id', handlers.updateListing);
 
 app.delete('/api/about/:id', handlers.removeListing);
 

@@ -38,19 +38,34 @@ module.exports = {
   ),
   createListing: async function createListing(listingInfo = {}) {
     const listing = new Description(listingInfo);
-    const latestListing = await this.getLatestListing();
 
-    if (!latestListing) {
-      throw new Error('could not find the latest listing');
+    if (listing.course_id === undefined || listing.course_id === 0) {
+      const latestListing = await this.getLatestListing();
+
+      if (!latestListing) {
+        throw new Error('could not find the latest listing');
+      }
+
+      listing.course_id = latestListing.course_id + 1;
     }
-
-    listing.course_id = latestListing.course_id + 1;
 
     await listing.save();
 
     return listing;
   },
-
+  isValidListing: (listingInfo = {}) => (
+    new Promise((resolve) => {
+      new Description(listingInfo)
+        .validate((err) => {
+          if (err) {
+            console.log(err);
+            resolve(false);
+          } else {
+            resolve(true);
+          }
+        });
+    })
+  ),
   removeListing: async (id) => {
     if (!id) {
       throw new Error('id is required');
@@ -62,4 +77,16 @@ module.exports = {
       course_id: id,
     });
   },
+  updateListing: async (id, listingInfo = {}) => (
+    new Promise((resolve, reject) => {
+      Description.findOneAndUpdate({ course_id: id }, listingInfo, (err) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+
+        resolve(true);
+      });
+    })
+  ),
 };
