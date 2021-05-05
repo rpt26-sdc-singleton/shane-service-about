@@ -50,7 +50,6 @@ db.once('open', console.log.bind(console, 'connected!'));
 //           for (let i = 0; i < outcomeKeys.length; i++) {
 //             const key = outcomeKeys[i];
 
-
 //             if (keys[key] === undefined) {
 //               k.splice(k.indexOf(key), 1);
 
