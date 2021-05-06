@@ -1,5 +1,8 @@
 /* eslint-disable no-await-in-loop */
-const axios = require('axios');
+// const axios = require('axios');
+const faker = require('faker');
+
+// const fillerText = {};
 
 const generateRandomPercentage = () => (Math.floor(Math.random() * 100) / 100);
 
@@ -8,11 +11,13 @@ const generateNumberWithinRange = (min, max) => (Math.floor(Math.random() * (max
 const generateFillerText = async (options) => {
   let text;
   if (options.paras) {
-    text = await axios.get(`https://baconipsum.com/api/?type=meat-and-filler&paras=${options.paras}&format=text`);
+    text = faker.lorem.paragraphs(options.paras);
   } else if (options.sentences) {
-    text = await axios.get(`https://baconipsum.com/api/?type=meat-and-filler&sentences=${options.sentences}&format=text`);
+    text = faker.lorem.sentences(options.sentences);
+    // text = await axios.get(`https://baconipsum.com/api/?type=meat-and-filler&sentences=${options.sentences}&format=text`);
   }
-  return text.data;
+
+  return text;
 };
 
 const generateLanguageList = () => {
@@ -122,12 +127,14 @@ const generateSkillsYouWillGain = async () => {
   return skills;
 };
 
-const generateRecords = async (numToGenerate) => {
-  const records = [];
-  for (let i = 1; i < numToGenerate + 1; i++) {
+const generateRecords = async (numToGenerate, onDataFill = () => {}) => {
+  let records = [];
+  const capacity = 1000;
+
+  for (let i = 1; i <= numToGenerate; i++) {
     console.log(`Creating record ${i}`);
     const item = {
-      course_id: i, // 1 - 100
+      course_id: i, // 1 - n
       recent_views: Math.floor(Math.random() * 10000000), // Random number between 0 and 10 million
       description: await generateFillerText({ paras: 4 }), // Bacon ipsum - 4 paragraphs
       learner_career_outcomes: await generateLearnerCareerOutcomes(),
@@ -136,6 +143,13 @@ const generateRecords = async (numToGenerate) => {
       skills_you_will_gain: await generateSkillsYouWillGain(),
     };
     records.push(item);
+
+    if (records.length === capacity) {
+      console.log(`executing callback function on ${capacity} generated records!`);
+      onDataFill(records);
+      console.log(`flushing ${capacity} records!`);
+      records = [];
+    }
   }
   return records;
 };

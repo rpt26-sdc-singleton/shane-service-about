@@ -1,32 +1,22 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const db = require('../database/model');
+const handlers = require('./handlers');
 
 const app = express();
 const PORT = 3002;
 
 app.use(cors());
 app.use(express.static('./public'));
+app.use(express.json());
 
-app.get('/api/about/:id', (req, res) => {
-  console.log('New request for', req.params.id);
-  db.getOne(req.params.id)
-    .then((data) => {
-      if (!data) {
-        res.sendStatus(404);
-      } else {
-        res.send(data).status(200);
-      }
-    })
-    .catch(() => {
-      res.sendStatus(404);
-    });
-});
+app.get('/api/about/:id', handlers.getListing);
 
-app.post('/api/about/:id', (req, res) => {
-  res.sendStatus(405);
-});
+app.post('/api/about/:id', handlers.createListing);
+
+app.put('/api/about/:id', handlers.updateListing);
+
+app.delete('/api/about/:id', handlers.removeListing);
 
 app.get('/*', (req, res) => {
   res.sendFile(path.resolve(__dirname, '../public/index.html'));

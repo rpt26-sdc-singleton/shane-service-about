@@ -25,4 +25,4 @@ build/
 dist/
 
 ## Env variables ##
-.env
+*.env
