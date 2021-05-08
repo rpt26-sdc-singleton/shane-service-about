@@ -1,20 +1,54 @@
 /* eslint-disable no-await-in-loop */
-// const axios = require('axios');
 const faker = require('faker');
+const fs = require('fs');
+const csv = require('fast-csv');
 
-// const fillerText = {};
+// arrayToJSON iterates through the array to build a string
+const arrayToJSON = (array) => {
+  const arrToJSON = (arr) => {
+    let str = '{';
+
+    for (let i = 0; i < array.length; i++) {
+      const element = arr[i];
+
+      if (Array.isArray(element)) {
+        str += arrToJSON(element);
+        str += ',';
+      } else if (typeof element === 'object') {
+        const keys = Object.keys(element);
+
+        for (let j = 0; j < keys.length; j++) {
+          const key = keys[j];
+          const objElement = element[key];
+
+          str += `"${key}":`;
+
+
+        }
+      } else {
+        str += `${element}`;
+      }
+    }
+
+    str += '}';
+
+    return str;
+  };
+
+  return arrToJSON(array);
+};
 
 const generateRandomPercentage = () => (Math.floor(Math.random() * 100) / 100);
 
 const generateNumberWithinRange = (min, max) => (Math.floor(Math.random() * (max - min) + min));
 
-const generateFillerText = async (options) => {
+const generateFillerText = (options) => {
   let text;
+
   if (options.paras) {
     text = faker.lorem.paragraphs(options.paras);
   } else if (options.sentences) {
     text = faker.lorem.sentences(options.sentences);
-    // text = await axios.get(`https://baconipsum.com/api/?type=meat-and-filler&sentences=${options.sentences}&format=text`);
   }
 
   return text;
@@ -104,20 +138,20 @@ const generateMetadata = () => {
   return icons;
 };
 
-const generateWhatYouWillLearn = async () => {
+const generateWhatYouWillLearn = () => {
   const whatYouWillLearn = [];
   for (let i = 0; i < 4; i++) {
-    const text = await generateFillerText({ sentences: 2 });
+    const text = generateFillerText({ sentences: 2 });
     whatYouWillLearn.push(text);
   }
   return whatYouWillLearn;
 };
 
-const generateSkillsYouWillGain = async () => {
+const generateSkillsYouWillGain = () => {
   const skills = [];
   const numOfSkills = generateNumberWithinRange(0, 10);
   for (let i = 0; i < numOfSkills; i++) {
-    let skill = await generateFillerText({ sentences: 1 });
+    let skill = generateFillerText({ sentences: 1 });
     if (skill.split(' ').length > 4) {
       const numOfWords = generateNumberWithinRange(2, 4);
       skill = skill.split(' ').slice(0, numOfWords).join(' ');
@@ -128,8 +162,8 @@ const generateSkillsYouWillGain = async () => {
 };
 
 const generateRecords = async (numToGenerate, onDataFill = () => {}) => {
-  let records = [];
-  const capacity = 1000;
+  // const capacity = 1000;
+  // let records = new Array(capacity);
 
   for (let i = 1; i <= numToGenerate; i++) {
     console.log(`Creating record ${i}`);
@@ -142,21 +176,66 @@ const generateRecords = async (numToGenerate, onDataFill = () => {}) => {
       what_you_will_learn: await generateWhatYouWillLearn(),
       skills_you_will_gain: await generateSkillsYouWillGain(),
     };
-    records.push(item);
 
-    if (records.length === capacity) {
-      console.log(`executing callback function on ${capacity} generated records!`);
-      onDataFill(records);
-      console.log(`flushing ${capacity} records!`);
-      records = [];
-    }
+    onDataFill(item);
+
+    // records[i] = item;
+
+    // if (i === numToGenerate) {
+    //   onDataFill(records);
+
+    //   break;
+    // } else if (i === capacity) {
+    //   console.log(`executing callback function on ${capacity} generated records!`);
+    //   onDataFill(records);
+    //   console.log(`flushing ${capacity} records!`);
+    //   records = new Array(capacity);
+    // }
   }
-  return records;
+
+  // return records;
+};
+
+// generateAndSave saves to .csv
+const generateAndSave = async (n, outputPath) => {
+  if (outputPath.slice(-4) !== '.csv') {
+    throw new Error('output path must include ".csv"');
+  }
+
+  const writeStream = csv.format({ headers: true });
+
+  writeStream.pipe(fs.createWriteStream(outputPath));
+
+  await generateRecords(n, (record) => {
+    const recordCopy = record;
+
+    // we can assume the rest of the array is empty
+    if (!recordCopy) {
+      return;
+    }
+
+    const keys = Object.keys(recordCopy);
+
+    for (let j = 0; j < keys.length; j++) {
+      const key = keys[j];
+
+      // nested arrays will be JSON.stringified
+      if (Array.isArray(recordCopy[key])) {
+        recordCopy[key] = JSON.stringify(recordCopy[key]);
+        // .replace('[', '{')
+        // .replace(']', '}');
+      }
+    }
+
+    writeStream.write(recordCopy);
+  });
+
+  writeStream.end();
 };
 
 const seedDatabase = async (Description) => {
   console.time('Database Seed');
-  const records = await generateRecords(100);
+  const records = generateRecords(100);
   Description.insertMany(records, (err, res) => {
     if (err) {
       console.error(err);
@@ -168,6 +247,7 @@ const seedDatabase = async (Description) => {
 };
 
 module.exports = {
+  arrayToJSON,
   generateRandomPercentage,
   generateRecords,
   generateFillerText,
@@ -177,5 +257,6 @@ module.exports = {
   generateWhatYouWillLearn,
   generateLanguageList,
   generateLearnerCareerOutcomes,
+  generateAndSave,
   seedDatabase,
 };
