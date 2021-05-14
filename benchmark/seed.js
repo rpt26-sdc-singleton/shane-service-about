@@ -1,17 +1,8 @@
 const path = require('path');
+const heapdump = require('heapdump');
 const { /* generateRecords, */ generateAndSave } = require('../database/seedFunctions');
 
 const tempFilepath = path.join(process.cwd(), 'temp-seed.csv');
-
-// const benchmark = async (n = 0) => {
-//   const timerName = `generateRecords-${n}`;
-//   console.time(timerName);
-//   await generateRecords(n, (records) => {
-//     records.forEach((record) => console.log(record.course_id));
-//   });
-
-//   console.timeEnd(timerName);
-// };
 
 const benchmarkGenerateAndSave = async (n = 0) => {
   const timerName = `generateAndSaveRecords-${n}`;
@@ -19,6 +10,15 @@ const benchmarkGenerateAndSave = async (n = 0) => {
   await generateAndSave(n, tempFilepath);
 
   console.timeEnd(timerName);
+
+  heapdump.writeSnapshot((err, filename) => {
+    if (err) {
+      console.log(`could not write heap dump: ${err}`);
+      return;
+    }
+
+    console.log(`wrote heap dump to: ${filename}`);
+  });
 };
 
 // 10 million
@@ -26,4 +26,4 @@ const benchmarkGenerateAndSave = async (n = 0) => {
 
 // 500,000 x 20 = 10 million
 // benchmark(5e5);
-benchmarkGenerateAndSave(1);
+benchmarkGenerateAndSave(1e3);

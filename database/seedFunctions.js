@@ -3,41 +3,6 @@ const faker = require('faker');
 const fs = require('fs');
 const csv = require('fast-csv');
 
-// arrayToJSON iterates through the array to build a string
-const arrayToJSON = (array) => {
-  const arrToJSON = (arr) => {
-    let str = '{';
-
-    for (let i = 0; i < array.length; i++) {
-      const element = arr[i];
-
-      if (Array.isArray(element)) {
-        str += arrToJSON(element);
-        str += ',';
-      } else if (typeof element === 'object') {
-        const keys = Object.keys(element);
-
-        for (let j = 0; j < keys.length; j++) {
-          const key = keys[j];
-          const objElement = element[key];
-
-          str += `"${key}":`;
-
-
-        }
-      } else {
-        str += `${element}`;
-      }
-    }
-
-    str += '}';
-
-    return str;
-  };
-
-  return arrToJSON(array);
-};
-
 const generateRandomPercentage = () => (Math.floor(Math.random() * 100) / 100);
 
 const generateNumberWithinRange = (min, max) => (Math.floor(Math.random() * (max - min) + min));
@@ -161,39 +126,53 @@ const generateSkillsYouWillGain = () => {
   return skills;
 };
 
-const generateRecords = async (numToGenerate, onDataFill = () => {}) => {
-  // const capacity = 1000;
-  // let records = new Array(capacity);
-
+const generateRecords = (numToGenerate, onDataFill = () => {}) => {
   for (let i = 1; i <= numToGenerate; i++) {
     console.log(`Creating record ${i}`);
-    const item = {
-      course_id: i, // 1 - n
-      recent_views: Math.floor(Math.random() * 10000000), // Random number between 0 and 10 million
-      description: await generateFillerText({ paras: 4 }), // Bacon ipsum - 4 paragraphs
-      learner_career_outcomes: await generateLearnerCareerOutcomes(),
-      metadata: await generateMetadata(),
-      what_you_will_learn: await generateWhatYouWillLearn(),
-      skills_you_will_gain: await generateSkillsYouWillGain(),
-    };
+    process.nextTick(() => {
+      onDataFill({
+        course_id: i, // 1 - n
+        // Random number between 0 and 10 million
+        recent_views: Math.floor(Math.random() * 10000000),
+        description: generateFillerText({ paras: 4 }),
+        learner_career_outcomes: generateLearnerCareerOutcomes().splice(0, 1),
+        metadata: generateMetadata(),
+        what_you_will_learn: generateWhatYouWillLearn(),
+        skills_you_will_gain: generateSkillsYouWillGain(),
+      });
+    });
+  }
+};
 
-    onDataFill(item);
+const stringifyObjectArrays = (obj = {}) => {
+  const objCopy = Object.assign(obj);
 
-    // records[i] = item;
+  let keys = Object.keys(objCopy);
 
-    // if (i === numToGenerate) {
-    //   onDataFill(records);
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
 
-    //   break;
-    // } else if (i === capacity) {
-    //   console.log(`executing callback function on ${capacity} generated records!`);
-    //   onDataFill(records);
-    //   console.log(`flushing ${capacity} records!`);
-    //   records = new Array(capacity);
-    // }
+    // nested arrays will be JSON.stringified
+    if (Array.isArray(objCopy[key])) {
+      let str = '{';
+
+      for (let j = 0; j < objCopy[key].length; j++) {
+        str += `"${encodeURIComponent(JSON.stringify(objCopy[key][j]))}"`;
+
+        if (j !== objCopy[key].length - 1) {
+          str += ',';
+        }
+      }
+
+      str += '}';
+
+      objCopy[key] = str;
+    }
   }
 
-  // return records;
+  keys = null;
+
+  return objCopy;
 };
 
 // generateAndSave saves to .csv
@@ -202,35 +181,36 @@ const generateAndSave = async (n, outputPath) => {
     throw new Error('output path must include ".csv"');
   }
 
-  const writeStream = csv.format({ headers: true });
+  const stream = csv.format({ headers: true });
+  const fsStream = fs.createWriteStream(outputPath, { flags: 'a' });
 
-  writeStream.pipe(fs.createWriteStream(outputPath));
+  stream.pipe(fsStream);
 
-  await generateRecords(n, (record) => {
-    const recordCopy = record;
+  stream.on('error', (err) => console.log(`write stream error: ${err}`));
+  stream.on('finish', () => console.log('finished writing to stream'));
 
-    // we can assume the rest of the array is empty
-    if (!recordCopy) {
-      return;
+  let initDrain = false;
+
+  await generateRecords(n, async (record) => {
+    const recordCopy = stringifyObjectArrays(record);
+
+    if (!stream.write(recordCopy)) {
+      await new Promise((resolve) => {
+        if (initDrain) {
+          resolve();
+          return;
+        }
+
+        initDrain = true;
+
+        stream.once('drain', () => {
+          stream.removeAllListeners('drain');
+          initDrain = false;
+          resolve();
+        });
+      });
     }
-
-    const keys = Object.keys(recordCopy);
-
-    for (let j = 0; j < keys.length; j++) {
-      const key = keys[j];
-
-      // nested arrays will be JSON.stringified
-      if (Array.isArray(recordCopy[key])) {
-        recordCopy[key] = JSON.stringify(recordCopy[key]);
-        // .replace('[', '{')
-        // .replace(']', '}');
-      }
-    }
-
-    writeStream.write(recordCopy);
   });
-
-  writeStream.end();
 };
 
 const seedDatabase = async (Description) => {
@@ -246,8 +226,11 @@ const seedDatabase = async (Description) => {
   console.timeEnd('Database Seed');
 };
 
+// const seedPostgres = async () => {
+
+// };
+
 module.exports = {
-  arrayToJSON,
   generateRandomPercentage,
   generateRecords,
   generateFillerText,

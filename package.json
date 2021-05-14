@@ -12,7 +12,10 @@
   },
   "scripts": {
     "server-start": "nodemon ./server/index.js",
+    "seed-to-csv": "node ./database/seedRunner.js save",
+    "seed-from-csv": "node ./database/seedRunner.js load",
     "seed-db": "node ./database/seedRunner.js",
+    "schema": "-u postgres -d coursera_about psql -a -f schema.sql ",
     "bench-db": "node ./benchmark/seed.js",
     "start": "node ./server/index.js",
     "watch": "webpack --watch",
@@ -30,7 +33,9 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "faker": "^5.5.3",
+    "fast-csv": "^4.3.6",
     "mongoose": "^5.11.18",
+    "pg": "^8.6.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "regenerator-runtime": "^0.13.7"
@@ -52,6 +57,7 @@
     "eslint-plugin-react": "^7.22.0",
     "eslint-plugin-react-hooks": "^4.2.0",
     "fetch-mock-jest": "^1.5.1",
+    "heapdump": "^0.3.15",
     "html-webpack-plugin": "^5.3.0",
     "jest": "^26.6.3",
     "jest-environment-enzyme": "^7.1.2",
