@@ -126,12 +126,18 @@ const generateSkillsYouWillGain = () => {
   return skills;
 };
 
-const generateRecords = (numToGenerate, onDataFill = () => {}) => {
-  for (let i = 1; i <= numToGenerate; i++) {
-    console.log(`Creating record ${i}`);
+const generateRecords = (i, numToGenerate, onDataFill = () => {}) => {
+  if (typeof i !== 'number') {
+    throw new Error('i must be of type number');
+  } else if (typeof numToGenerate !== 'number') {
+    throw new Error('numToGenerate must be of type number');
+  }
+
+  for (let j = i; j <= numToGenerate; j++) {
+    console.log(`Creating record ${j}`);
     process.nextTick(() => {
       onDataFill({
-        course_id: i, // 1 - n
+        course_id: j, // 1 - n
         // Random number between 0 and 10 million
         recent_views: Math.floor(Math.random() * 10000000),
         description: generateFillerText({ paras: 4 }),
@@ -175,13 +181,38 @@ const stringifyObjectArrays = (obj = {}) => {
   return objCopy;
 };
 
+const isFileEmpty = async (filepath = '') => (
+  new Promise ((resolve) => {
+    fs.stat(filepath, (err, stats) => {
+      if (err) {
+        resolve(true);
+      } else {
+        console.log(stats.size);
+        resolve(stats.size === 0);
+      }
+    });
+  })
+);
+
 // generateAndSave saves to .csv
-const generateAndSave = async (n, outputPath) => {
+const generateAndSave = async (n, numToGenerate, outputPath) => {
   if (outputPath.slice(-4) !== '.csv') {
     throw new Error('output path must include ".csv"');
   }
 
-  const stream = csv.format({ headers: true });
+  let writeHeaders = false;
+
+  // do not write headers if file is not empty
+  const isEmpty = await isFileEmpty(outputPath);
+  if (isEmpty) {
+    writeHeaders = true;
+  }
+
+  const stream = csv.format({
+    writeHeaders,
+    headers: true,
+  });
+
   const fsStream = fs.createWriteStream(outputPath, { flags: 'a' });
 
   stream.pipe(fsStream);
@@ -191,7 +222,7 @@ const generateAndSave = async (n, outputPath) => {
 
   let initDrain = false;
 
-  await generateRecords(n, async (record) => {
+  await generateRecords(n, numToGenerate, async (record) => {
     const recordCopy = stringifyObjectArrays(record);
 
     if (!stream.write(recordCopy)) {
