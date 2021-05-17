@@ -1,7 +1,9 @@
 /* eslint-disable no-await-in-loop */
 const faker = require('faker');
 const fs = require('fs');
+const stream = require('stream');
 const csv = require('fast-csv');
+const util = require('util');
 
 const generateRandomPercentage = () => (Math.floor(Math.random() * 100) / 100);
 
@@ -133,21 +135,39 @@ const generateRecords = (i, numToGenerate, onDataFill = () => {}) => {
     throw new Error('numToGenerate must be of type number');
   }
 
+  const readableStream = new stream.Readable({
+    objectMode: true,
+  });
+
+  onDataFill(readableStream);
+
   for (let j = i; j <= numToGenerate; j++) {
-    console.log(`Creating record ${j}`);
-    process.nextTick(() => {
-      onDataFill({
-        course_id: j, // 1 - n
-        // Random number between 0 and 10 million
-        recent_views: Math.floor(Math.random() * 10000000),
-        description: generateFillerText({ paras: 4 }),
-        learner_career_outcomes: generateLearnerCareerOutcomes().splice(0, 1),
-        metadata: generateMetadata(),
-        what_you_will_learn: generateWhatYouWillLearn(),
-        skills_you_will_gain: generateSkillsYouWillGain(),
-      });
+    readableStream.push({
+      course_id: j, // 1 - n
+      // Random number between 0 and 10 million
+      recent_views: Math.floor(Math.random() * 10000000),
+      description: generateFillerText({ paras: 4 }),
+      learner_career_outcomes: generateLearnerCareerOutcomes().splice(0, 1),
+      metadata: generateMetadata(),
+      what_you_will_learn: generateWhatYouWillLearn(),
+      skills_you_will_gain: generateSkillsYouWillGain(),
     });
+    console.log(`Creating record ${j}`);
+    // process.nextTick(() => {
+    //   onDataFill({
+    //     course_id: j, // 1 - n
+    //     // Random number between 0 and 10 million
+    //     recent_views: Math.floor(Math.random() * 10000000),
+    //     description: generateFillerText({ paras: 4 }),
+    //     learner_career_outcomes: generateLearnerCareerOutcomes().splice(0, 1),
+    //     metadata: generateMetadata(),
+    //     what_you_will_learn: generateWhatYouWillLearn(),
+    //     skills_you_will_gain: generateSkillsYouWillGain(),
+    //   });
+    // });
   }
+
+  readableStream.push(null);
 };
 
 const stringifyObjectArrays = (obj = {}) => {
@@ -182,7 +202,7 @@ const stringifyObjectArrays = (obj = {}) => {
 };
 
 const isFileEmpty = async (filepath = '') => (
-  new Promise ((resolve) => {
+  new Promise((resolve) => {
     fs.stat(filepath, (err, stats) => {
       if (err) {
         resolve(true);
@@ -194,6 +214,26 @@ const isFileEmpty = async (filepath = '') => (
   })
 );
 
+const ArraysToJSON = function toJSON(options = {}) {
+  stream.Transform.call(this, options);
+
+  this._readableState.objectMode = true;
+  this._writableState.objectMode = true;
+
+  return this;
+};
+
+util.inherits(ArraysToJSON, stream.Transform);
+
+ArraysToJSON.prototype._transform = function transform(chunk, enc, cb) {
+  const chunkCopy = Object.assign(stringifyObjectArrays(chunk));
+
+  // this.push(JSON.stringify(chunkCopy));
+  this.push(chunkCopy);
+
+  cb();
+};
+
 // generateAndSave saves to .csv
 const generateAndSave = async (n, numToGenerate, outputPath) => {
   if (outputPath.slice(-4) !== '.csv') {
@@ -204,43 +244,50 @@ const generateAndSave = async (n, numToGenerate, outputPath) => {
 
   // do not write headers if file is not empty
   const isEmpty = await isFileEmpty(outputPath);
+
   if (isEmpty) {
     writeHeaders = true;
   }
 
-  const stream = csv.format({
+  const csvStream = csv.format({
     writeHeaders,
     headers: true,
   });
 
   const fsStream = fs.createWriteStream(outputPath, { flags: 'a' });
 
-  stream.pipe(fsStream);
+  csvStream.pipe(fsStream);
 
-  stream.on('error', (err) => console.log(`write stream error: ${err}`));
-  stream.on('finish', () => console.log('finished writing to stream'));
+  // let initDrain = false;
 
-  let initDrain = false;
+  /* await */ generateRecords(n, numToGenerate, /* async */ (recordStream) => {
+    const arraysToJSON = new ArraysToJSON();
 
-  await generateRecords(n, numToGenerate, async (record) => {
-    const recordCopy = stringifyObjectArrays(record);
+    recordStream.pipe(arraysToJSON).pipe(csvStream);
+  //   const writeRecords = async (recordCopy) => {
+  //     if (!csvStream.write(recordCopy)) {
+  //       await new Promise((resolve) => {
+  //         if (initDrain) {
+  //           resolve();
+  //           return;
+  //         }
 
-    if (!stream.write(recordCopy)) {
-      await new Promise((resolve) => {
-        if (initDrain) {
-          resolve();
-          return;
-        }
+  //         initDrain = true;
 
-        initDrain = true;
+  //         csvStream.once('drain', () => {
+  //           csvStream.removeAllListeners('drain');
+  //           initDrain = false;
+  //           resolve();
+  //         });
+  //       });
+  //     }
+  //   };
 
-        stream.once('drain', () => {
-          stream.removeAllListeners('drain');
-          initDrain = false;
-          resolve();
-        });
-      });
-    }
+  //   let recordCopy = stringifyObjectArrays(record);
+
+  //   await writeRecords(recordCopy);
+
+  //   recordCopy = null;
   });
 };
 
