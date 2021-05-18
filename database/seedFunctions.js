@@ -128,21 +128,17 @@ const generateSkillsYouWillGain = () => {
   return skills;
 };
 
-const generateRecords = (i, numToGenerate, onDataFill = () => {}) => {
+const generateRecords = async (i, numToGenerate) => {
   if (typeof i !== 'number') {
     throw new Error('i must be of type number');
   } else if (typeof numToGenerate !== 'number') {
     throw new Error('numToGenerate must be of type number');
   }
 
-  const readableStream = new stream.Readable({
-    objectMode: true,
-  });
+  let j = i;
 
-  onDataFill(readableStream);
-
-  for (let j = i; j <= numToGenerate; j++) {
-    readableStream.push({
+  const generate = function g() {
+    this.newRecord = {
       course_id: j, // 1 - n
       // Random number between 0 and 10 million
       recent_views: Math.floor(Math.random() * 10000000),
@@ -151,23 +147,43 @@ const generateRecords = (i, numToGenerate, onDataFill = () => {}) => {
       metadata: generateMetadata(),
       what_you_will_learn: generateWhatYouWillLearn(),
       skills_you_will_gain: generateSkillsYouWillGain(),
-    });
-    console.log(`Creating record ${j}`);
-    // process.nextTick(() => {
-    //   onDataFill({
-    //     course_id: j, // 1 - n
-    //     // Random number between 0 and 10 million
-    //     recent_views: Math.floor(Math.random() * 10000000),
-    //     description: generateFillerText({ paras: 4 }),
-    //     learner_career_outcomes: generateLearnerCareerOutcomes().splice(0, 1),
-    //     metadata: generateMetadata(),
-    //     what_you_will_learn: generateWhatYouWillLearn(),
-    //     skills_you_will_gain: generateSkillsYouWillGain(),
-    //   });
-    // });
+    };
+
+    if (!this.push(this.newRecord)) {
+      generate.call(this);
+      return;
+    }
+  };
+
+  const readStream = new stream.Readable({
+    objectMode: true,
+
+    newRecord: null,
+    lastRecordID: null,
+    async read() {
+        generate.call(this);
+        console.log(`Creating record ${j}`);
+      }
+    },
+  });
+
+  return readStream;
+};
+
+const stringifyArrayForPostgres = (arr = []) => {
+  let str = '{';
+
+  for (let i = 0; i < arr.length; i++) {
+    str += `"${encodeURIComponent(JSON.stringify(arr[i]))}"`;
+
+    if (i !== arr.length - 1) {
+      str += ',';
+    }
   }
 
-  readableStream.push(null);
+  str += '}';
+
+  return str;
 };
 
 const stringifyObjectArrays = (obj = {}) => {
@@ -180,19 +196,10 @@ const stringifyObjectArrays = (obj = {}) => {
 
     // nested arrays will be JSON.stringified
     if (Array.isArray(objCopy[key])) {
-      let str = '{';
-
-      for (let j = 0; j < objCopy[key].length; j++) {
-        str += `"${encodeURIComponent(JSON.stringify(objCopy[key][j]))}"`;
-
-        if (j !== objCopy[key].length - 1) {
-          str += ',';
-        }
+      if (key === 'learner_career_outcomes'
+        || key === 'metadata') {
+        objCopy[key] = stringifyArrayForPostgres(objCopy);
       }
-
-      str += '}';
-
-      objCopy[key] = str;
     }
   }
 
@@ -226,10 +233,7 @@ const ArraysToJSON = function toJSON(options = {}) {
 util.inherits(ArraysToJSON, stream.Transform);
 
 ArraysToJSON.prototype._transform = function transform(chunk, enc, cb) {
-  const chunkCopy = Object.assign(stringifyObjectArrays(chunk));
-
-  // this.push(JSON.stringify(chunkCopy));
-  this.push(chunkCopy);
+  this.push(stringifyObjectArrays(chunk));
 
   cb();
 };
@@ -258,55 +262,65 @@ const generateAndSave = async (n, numToGenerate, outputPath) => {
 
   csvStream.pipe(fsStream);
 
-  // let initDrain = false;
-
-  /* await */ generateRecords(n, numToGenerate, /* async */ (recordStream) => {
+  generateRecords(n, numToGenerate, (recordStream) => {
     const arraysToJSON = new ArraysToJSON();
 
     recordStream.pipe(arraysToJSON).pipe(csvStream);
-  //   const writeRecords = async (recordCopy) => {
-  //     if (!csvStream.write(recordCopy)) {
-  //       await new Promise((resolve) => {
-  //         if (initDrain) {
-  //           resolve();
-  //           return;
-  //         }
-
-  //         initDrain = true;
-
-  //         csvStream.once('drain', () => {
-  //           csvStream.removeAllListeners('drain');
-  //           initDrain = false;
-  //           resolve();
-  //         });
-  //       });
-  //     }
-  //   };
-
-  //   let recordCopy = stringifyObjectArrays(record);
-
-  //   await writeRecords(recordCopy);
-
-  //   recordCopy = null;
   });
 };
 
-const seedDatabase = async (Description) => {
-  console.time('Database Seed');
-  const records = generateRecords(100);
-  Description.insertMany(records, (err, res) => {
-    if (err) {
-      console.error(err);
-    } else {
-      console.log(res);
-    }
-  });
-  console.timeEnd('Database Seed');
+const seedDatabase = async (client) => {
+  let insertStatement = 'INSERT INTO description';
+  insertStatement += '(course_id,recent_views,description, learner_career_outcomes,';
+  insertStatement += 'metadata,what_you_will_learn,skills_you_will_gain)';
+  insertStatement += ' VALUES($1, $2, $3, $4, $5, $6, $7)';
+
+  const rollback = async (err) => {
+    await client.query('ROLLBACK');
+
+    await client.release();
+    console.log(err);
+    process.exit(1);
+  };
+
+  Promise.resolve(() => {
+    console.time('Database Seed');
+
+    return client.query('BEGIN');
+  })
+    .then(() => generateRecords(110001, 2e5))
+    .then((recordStream) => {
+      recordStream.on('end', () => {
+        client.query('COMMIT');
+        // console.timeEnd('Database Seed');
+      });
+
+      recordStream.on('error', (err) => {
+        console.log(`record stream error: ${err}`);
+      });
+
+      recordStream.on('data', async (record) => {
+        try {
+          client.query(insertStatement, [
+            record.course_id,
+            record.recent_views,
+            record.description,
+            record.learner_career_outcomes,
+            record.metadata,
+            record.what_you_will_learn,
+            record.skills_you_will_gain,
+          ]);
+
+          console.log(`inserted course_id: ${record.course_id}`);
+        } catch (err) {
+          rollback(`insert into db failed: ${err}`);
+        }
+      });
+    })
+    .catch((err) => {
+      rollback(`transaction failed: ${err}`);
+    });
 };
-
-// const seedPostgres = async () => {
-
-// };
 
 module.exports = {
   generateRandomPercentage,

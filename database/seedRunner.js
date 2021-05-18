@@ -2,7 +2,12 @@
 // Allows testing the seed functions without the database
 
 const path = require('path');
-const { generateAndSave, generateRecords } = require('./seedFunctions');
+const { client } = require('./db');
+const {
+  generateAndSave,
+  // generateRecords,
+  seedDatabase,
+} = require('./seedFunctions');
 
 const seedFilePath = path.join(process.cwd(), 'seed.csv');
 
@@ -34,7 +39,13 @@ const seedFilePath = path.join(process.cwd(), 'seed.csv');
 
   // generate data and do something in memory
   console.log('working with data in-memory');
-  generateRecords(1, 1e6, (record) => {
-    console.log(record.course_id);
+
+  client.then((db) => seedDatabase(db)).catch((err) => {
+    console.log(`seed database failed: ${err}`);
   });
+  // generateRecords(1, 1e1, (recordStream) => {
+  //   recordStream.on('data', (record) => {
+  //     console.log(typeof record);
+  //   });
+  // });
 })();
