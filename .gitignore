@@ -27,3 +27,5 @@ dist/
 ## Env variables ##
 *.env
 *.csv
+
+gen

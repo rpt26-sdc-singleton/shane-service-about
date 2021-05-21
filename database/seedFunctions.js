@@ -138,6 +138,20 @@ const generateRecords = async (i, numToGenerate) => {
   let j = i;
 
   const generate = function g() {
+    if (this.newRecord && this.newRecord.course_id === this.lastRecordID) {
+      // if (!this.push(this.newRecord)) {
+      //   // generate.call(this);
+      //   return;
+      // }
+    }
+
+    j++;
+
+    if (j > numToGenerate) {
+      this.destroy();
+      return;
+    }
+
     this.newRecord = {
       course_id: j, // 1 - n
       // Random number between 0 and 10 million
@@ -149,6 +163,8 @@ const generateRecords = async (i, numToGenerate) => {
       skills_you_will_gain: generateSkillsYouWillGain(),
     };
 
+    this.lastRecordID = this.newRecord.course_id;
+
     if (!this.push(this.newRecord)) {
       generate.call(this);
       return;
@@ -157,13 +173,11 @@ const generateRecords = async (i, numToGenerate) => {
 
   const readStream = new stream.Readable({
     objectMode: true,
-
     newRecord: null,
     lastRecordID: null,
     async read() {
         generate.call(this);
         console.log(`Creating record ${j}`);
-      }
     },
   });
 
@@ -283,16 +297,23 @@ const seedDatabase = async (client) => {
     process.exit(1);
   };
 
-  Promise.resolve(() => {
-    console.time('Database Seed');
+  const currentTime = await client.query('select now();');
 
-    return client.query('BEGIN');
-  })
-    .then(() => generateRecords(110001, 2e5))
+  console.log(currentTime.rows.length > 0 ? 'connected to db!' : 'failed to connect!');
+
+  generateRecords(1, 1e5)
     .then((recordStream) => {
-      recordStream.on('end', () => {
-        client.query('COMMIT');
-        // console.timeEnd('Database Seed');
+      console.time('Database Seed');
+
+      recordStream.on('finish', () => {
+        console.log('finished seeding');
+      });
+
+
+      recordStream.on('end', async () => {
+        await client.release();
+        console.log('finished committing insertion :)');
+        console.timeEnd('Database Seed');
       });
 
       recordStream.on('error', (err) => {
@@ -300,21 +321,24 @@ const seedDatabase = async (client) => {
       });
 
       recordStream.on('data', async (record) => {
-        try {
-          client.query(insertStatement, [
-            record.course_id,
-            record.recent_views,
-            record.description,
-            record.learner_career_outcomes,
-            record.metadata,
-            record.what_you_will_learn,
-            record.skills_you_will_gain,
-          ]);
+        // await client.query('BEGIN');
 
-          console.log(`inserted course_id: ${record.course_id}`);
-        } catch (err) {
-          rollback(`insert into db failed: ${err}`);
-        }
+        client.query(insertStatement, [
+          record.course_id,
+          record.recent_views,
+          record.description,
+          record.learner_career_outcomes,
+          record.metadata,
+          record.what_you_will_learn,
+          record.skills_you_will_gain,
+        ]).then((result) => console.log((result.rowCount > 0) ? `inserted row ${record.course_id}` : 'did not insert row'))
+          .catch((err) => {
+            rollback(`insert ${record.course_id} into db failed: ${err}`)
+              .catch(() => readStream.destroy());
+          });
+
+
+          // await client.query('COMMIT');
       });
     })
     .catch((err) => {

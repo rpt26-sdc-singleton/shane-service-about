@@ -15,7 +15,7 @@
     "seed-to-csv": "node ./database/seedRunner.js save",
     "seed-from-csv": "sudo -u postgres psql -d coursera_about -c \"\\copy description from $PWD/seed.csv delimiter ',' csv header;\"",
     "seed-db": "node ./database/seedRunner.js",
-    "schema": "sudo -u postgres psql -d coursera_about -a -f ./database/schema.sql ",
+    "schema": "sudo -u postgres psql -d coursera_about -a -f ./database/schema.sql",
     "bench-db": "node ./benchmark/seed.js",
     "start": "node ./server/index.js",
     "watch": "webpack --watch",
