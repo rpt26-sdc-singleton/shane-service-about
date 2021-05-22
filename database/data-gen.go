@@ -1,24 +1,28 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"math/rand"
+	"net/url"
 	"os"
 	"time"
 
 	lorem "github.com/drhodes/golorem"
+	pgx "github.com/jackc/pgx/v4"
 )
 
 type learnerCareerOutcomes struct {
-	icon    string
-	pct     float32
-	outcome string
+	Icon    string  `json:"icon"`
+	PCT     float32 `json:"pct"`
+	Outcome string  `json:"outcome"`
 }
 
 type metadata struct {
-	icon     string
-	title    string
-	subtitle string
+	Icon     string `json:"icon"`
+	Title    string `json:"title"`
+	Subtitle string `json:"subtitle"`
 }
 
 type Record struct {
@@ -29,6 +33,93 @@ type Record struct {
 	metadata              []metadata
 	whatYouWillLearn      []string
 	skillsYouWillGain     []string
+}
+
+func (r *Record) outcomeToPostgresArray() (string, error) {
+	str := "{"
+
+	var outcomeJSON []byte
+	var err error
+
+	outcomeLen := len(r.learnerCareerOutcomes)
+
+	for i := 0; i < outcomeLen; i++ {
+		outcomeJSON, err = json.Marshal(r.learnerCareerOutcomes)
+
+		if err != nil {
+			return "", err
+		}
+
+		str += "\""
+
+		str += url.QueryEscape(string(outcomeJSON))
+
+		str += "\""
+
+		if i != (outcomeLen - 1) {
+			str += ","
+		}
+	}
+
+	str += "}"
+
+	return str, nil
+}
+
+func (r *Record) metadataToPostgresArray() (string, error) {
+	str := "{"
+
+	var metadataJSON []byte
+	var err error
+
+	metadataLen := len(r.metadata)
+
+	for i := 0; i < metadataLen; i++ {
+		metadataJSON, err = json.Marshal(r.metadata)
+
+		if err != nil {
+			return "", err
+		}
+
+		str += "\""
+
+		str += url.QueryEscape(string(metadataJSON))
+
+		str += "\""
+
+		if i != (metadataLen - 1) {
+			str += ","
+		}
+	}
+
+	str += "}"
+
+	return str, nil
+}
+
+func (r *Record) saveToDB(conn *pgx.Conn, ctx context.Context) error {
+
+	outcomeArray, err := r.outcomeToPostgresArray()
+
+	if err != nil {
+		return err
+	}
+
+	metadataArray, err := r.metadataToPostgresArray()
+
+	if err != nil {
+		return err
+	}
+
+	_, err = conn.Exec(ctx, `
+			insert into description
+			(course_id,recent_views,description, learner_career_outcomes,
+			metadata,what_you_will_learn,skills_you_will_gain)
+			values($1, $2, $3, $4, $5, $6, $7)
+		`, r.courseID, r.recentViews, r.description, outcomeArray,
+		metadataArray, r.whatYouWillLearn, r.skillsYouWillGain)
+
+	return err
 }
 
 const tenMill = int(1e7)
@@ -72,19 +163,19 @@ func generateLanguages() string {
 func generateCareerOutcomes() []learnerCareerOutcomes {
 	return []learnerCareerOutcomes{
 		learnerCareerOutcomes{
-			icon:    "careerDirectionSVG",
-			pct:     generateRandomPercentage(),
-			outcome: "started a new career after completing these courses",
+			Icon:    "careerDirectionSVG",
+			PCT:     generateRandomPercentage(),
+			Outcome: "started a new career after completing these courses",
 		},
 		learnerCareerOutcomes{
-			icon:    "careerBenefitSVG",
-			pct:     generateRandomPercentage(),
-			outcome: "got a tangible career benefit from this course",
+			Icon:    "careerBenefitSVG",
+			PCT:     generateRandomPercentage(),
+			Outcome: "got a tangible career benefit from this course",
 		},
 		learnerCareerOutcomes{
-			icon:    "careerPromotionSVG",
-			pct:     generateRandomPercentage(),
-			outcome: "got a pay increase or promotion",
+			Icon:    "careerPromotionSVG",
+			PCT:     generateRandomPercentage(),
+			Outcome: "got a pay increase or promotion",
 		},
 	}
 }
@@ -92,31 +183,52 @@ func generateCareerOutcomes() []learnerCareerOutcomes {
 func generateMetadata() []metadata {
 	return []metadata{
 		metadata{
-			icon:     "sharableCertificateSVG",
-			title:    "Shareable Certificate",
-			subtitle: "Earn a Certificate upon completion",
+			Icon:     "sharableCertificateSVG",
+			Title:    "Shareable Certificate",
+			Subtitle: "Earn a Certificate upon completion",
 		},
 		metadata{
-			icon:     "onlineSVG",
-			title:    "100% online",
-			subtitle: "Start instantly and learn at your own schedule",
+			Icon:     "onlineSVG",
+			Title:    "100% online",
+			Subtitle: "Start instantly and learn at your own schedule",
 		},
 		metadata{
-			icon:     "deadlinesSVG",
-			title:    "Flexible Deadlines",
-			subtitle: "Reset deadlines in accordance to your schedule",
+			Icon:     "deadlinesSVG",
+			Title:    "Flexible Deadlines",
+			Subtitle: "Reset deadlines in accordance to your schedule",
 		},
 		metadata{
-			icon:     "hoursSVG",
-			title:    fmt.Sprintf("Approx. %d hours to complete", generateRandomHours()),
-			subtitle: "",
+			Icon:     "hoursSVG",
+			Title:    fmt.Sprintf("Approx. %d hours to complete", generateRandomHours()),
+			Subtitle: "",
 		},
 		metadata{
-			icon:     "languagesSVG",
-			title:    "English",
-			subtitle: generateLanguages(),
+			Icon:     "languagesSVG",
+			Title:    "English",
+			Subtitle: generateLanguages(),
 		},
 	}
+}
+
+func generateWhatYouWillLearn() []string {
+	return []string{
+		lorem.Paragraph(2, 2),
+		lorem.Paragraph(2, 2),
+		lorem.Paragraph(2, 2),
+		lorem.Paragraph(2, 2),
+	}
+}
+
+func generateSkillsGained() []string {
+	n := rand.Intn(10-1) + 10
+
+	skills := make([]string, n)
+
+	for i := 0; i < len(skills); i++ {
+		skills[i] = lorem.Sentence(2, 3)
+	}
+
+	return skills
 }
 
 func exitWithError(err error) {
@@ -127,18 +239,31 @@ func exitWithError(err error) {
 }
 
 func main() {
-	// currDir, err := os.Getwd()
+	// connect to db before generating
+	conn, err := pgx.Connect(context.Background(), os.Getenv("PG_URL"))
 
-	// exitWithError(err)
+	if err != nil {
+		exitWithError(err)
+	}
 
-	// outputPath := filepath.Join(currDir, "seed.csv")
-
-	recordsToGenerate := int(1e5)
+	recordsToGenerate := int(1e7)
 
 	fmt.Printf("generating %d records\n", recordsToGenerate)
 
+	_, err = conn.Exec(context.Background(), "begin")
+
+	exitWithError(err)
+
 	// start timer
 	start := time.Now()
+
+	defer func() {
+		conn.Close(context.Background())
+
+		fmt.Printf("Generated %d records in %v\n", recordsToGenerate, time.Since(start))
+
+		os.Exit(0)
+	}()
 
 	for i := 1; i <= recordsToGenerate; i++ {
 		record := Record{
@@ -147,16 +272,16 @@ func main() {
 			description:           lorem.Paragraph(1, 4),
 			learnerCareerOutcomes: generateCareerOutcomes(),
 			metadata:              generateMetadata(),
-			whatYouWillLearn:      []string{},
-			skillsYouWillGain:     []string{},
+			whatYouWillLearn:      generateWhatYouWillLearn(),
+			skillsYouWillGain:     generateSkillsGained(),
 		}
 
-		fmt.Printf("generating record %d with %d views\n", record.courseID, record.recentViews)
-		fmt.Println(record.metadata)
-		break
+		fmt.Printf("generating record %d\n", record.courseID)
+
+		if err = record.saveToDB(conn, context.Background()); err != nil {
+			fmt.Printf("failed to save record %d: %v\n", record.courseID, err)
+		}
+
+		// break
 	}
-
-	fmt.Printf("Generated %d records in %v\n", recordsToGenerate, time.Since(start))
-
-	os.Exit(0)
 }
