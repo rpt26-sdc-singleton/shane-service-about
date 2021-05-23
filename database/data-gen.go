@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"math"
 	"math/rand"
 	"net/url"
 	"os"
@@ -111,6 +110,8 @@ func (r *Record) saveToDB(batch *pgx.Batch, ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+
+	// fmt.Println(r.courseID)
 
 	batch.Queue(`insert into description
 			(course_id,recent_views,description, learner_career_outcomes,
@@ -254,13 +255,9 @@ func main() {
 		exitWithError(err)
 	}
 
-	recordsToGenerate := 108
+	recordsToGenerate := int(1e7)
 
 	fmt.Printf("generating %d records\n", recordsToGenerate)
-
-	_, err = conn.Exec(context.Background(), "begin")
-
-	exitWithError(err)
 
 	// start timer
 	start := time.Now()
@@ -273,13 +270,12 @@ func main() {
 		os.Exit(0)
 	}()
 
-	j := 107997
-	saveOnEvery := int(1e2)
-	batchCount := math.Abs(float64((saveOnEvery - j)))
+	saveOnEvery := int(75e3)
+	batchCount := 0
 
 	batch := &pgx.Batch{}
 
-	for i := j; i <= recordsToGenerate; i++ {
+	for i := 0; i <= recordsToGenerate; i++ {
 		record := Record{
 			courseID:              i,
 			recentViews:           generateViews(),
@@ -290,35 +286,34 @@ func main() {
 			skillsYouWillGain:     generateSkillsGained(),
 		}
 
-		fmt.Printf("generating record %d\n", record.courseID)
+		// fmt.Printf("generating record %d\n", record.courseID)
 
-		if err = record.saveToDB(batch, context.Background()); err != nil {
+		err := record.saveToDB(batch, context.Background())
+
+		if err != nil {
 			fmt.Printf("failed to save record %d: %v\n", record.courseID, err)
+			continue
 		}
 
-		j++
 		batchCount++
 
 		// every 100k commit
-		if j == saveOnEvery {
+		if batchCount == saveOnEvery || (i == recordsToGenerate) {
 			fmt.Println("sending batch request")
 
-			batchRequest := conn.SendBatch(context.Background(), batch)
+			batchResults := conn.SendBatch(context.Background(), batch)
 
-			for ; batchCount > 0; batchCount-- {
-				if query, err := batchRequest.Exec(); err != nil {
-					fmt.Printf("batch failed: %v\n", err)
-				} else {
-					fmt.Printf("inserted %d: %v\n", record.courseID, query.RowsAffected() == 1)
-				}
+			if _, err := batchResults.Exec(); err != nil {
+				fmt.Printf("batch failed: %v\n", err)
+				continue
+			} else {
+				// fmt.Printf("inserted batch: %v\n", query.RowsAffected() == 1)
+				batch = &pgx.Batch{}
 			}
 
-			j = 0
+			batchResults.Close()
+
 			batchCount = 0
 		}
-	}
-
-	if _, err := conn.Exec(context.Background(), "commit"); err != nil {
-		fmt.Printf("commit failed: %v\n", err)
 	}
 }
