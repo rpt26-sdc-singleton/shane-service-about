@@ -27,7 +27,7 @@ const helpers = {
 
       if (key === 'learner_career_outcomes'
         || key === 'metadata') {
-        recordCopy[key] = this.serializeDBArray(recordCopy);
+        recordCopy[key] = this.serializeDBArray(recordCopy[key]);
       }
     }
 
@@ -43,7 +43,6 @@ const helpers = {
 
       if (key === 'learner_career_outcomes'
         || key === 'metadata') {
-        console.log(objCopy[key]);
         objCopy[key] = this.deserializeDBArray(objCopy[key]);
       }
     }
@@ -71,7 +70,7 @@ const helpers = {
 };
 
 module.exports = {
-  getOne: (id) => {
+  getOne: async (id) => {
     if (!id) {
       throw new Error('id is required');
     } else if (Number.isNaN(id)) {
@@ -80,66 +79,83 @@ module.exports = {
 
     const query = format('select * from %I where course_id=%L', 'description', id);
 
-    return db.query(query)
-      .then((res) => {
-        if (res.rows.length < 1) {
-          throw new Error('not found');
-        }
+    const result = await db.query(query);
 
-        return helpers.deserializeRecord(res.rows[0]);
+    if (result.rows.length < 1) {
+      throw new Error('not found');
+    }
+
+    return helpers.deserializeRecord(result.rows[0]);
+  },
+  createListing: function createListing(listingInfo = {}) {
+    const listingCopy = helpers.serializeRecord(listingInfo);
+
+    const query = 'insert into description(course_id,recent_views,description,learner_career_outcomes,metadata,what_you_will_learn,skills_you_will_gain) values($1, $2, $3, $4, $5, $6, $7)';
+
+    return db.query(query, [
+      listingCopy.courseID,
+      listingCopy.recent_views,
+      listingCopy.description,
+      listingCopy.learner_career_outcomes,
+      listingCopy.metadata,
+      listingCopy.what_you_will_learn,
+      listingCopy.skills_you_will_gain])
+      .then((result) => result.rowCount)
+      .catch((err) => {
+        throw err;
       });
   },
-  // createListing: async function createListing(listingInfo = {}) {
-  //   const listing = new Description(listingInfo);
+  removeListing: (id) => {
+    if (!id) {
+      throw new Error('id is required');
+    } else if (Number.isNaN(id)) {
+      throw new Error('id must be of type number');
+    }
 
-  //   if (listing.course_id === undefined || listing.course_id === 0) {
-  //     const latestListing = await this.getLatestListing();
+    const query = format('delete from description where course_id=%L', id);
 
-  //     if (!latestListing) {
-  //       throw new Error('could not find the latest listing');
-  //     }
+    return db.query(query)
+      .then((result) => result.rowCount)
+      .catch((err) => {
+        throw err;
+      });
+  },
+  updateListing: async (id, listingInfo = {}) => {
+    if (Number.isNaN(id)) {
+      throw new Error('id must be of type number');
+    }
 
-  //     listing.course_id = latestListing.course_id + 1;
-  //   }
+    if (!listingInfo) {
+      throw new Error('must have a field to update');
+    }
 
-  //   await listing.save();
+    const queryValues = [];
+    let queryBuilder = '';
 
-  //   return listing;
-  // },
-  // isValidListing: (listingInfo = {}) => (
-  //   new Promise((resolve) => {
-  //     new Description(listingInfo)
-  //       .validate((err) => {
-  //         if (err) {
-  //           console.log(err);
-  //           resolve(false);
-  //         } else {
-  //           resolve(true);
-  //         }
-  //       });
-  //   })
-  // ),
-  // removeListing: async (id) => {
-  //   if (!id) {
-  //     throw new Error('id is required');
-  //   } else if (Number.isNaN(id)) {
-  //     throw new Error('id must be of type number');
-  //   }
+    const keys = Object.keys(listingInfo);
 
-  //   await Description.deleteOne({
-  //     course_id: id,
-  //   });
-  // },
-  // updateListing: async (id, listingInfo = {}) => (
-  //   new Promise((resolve, reject) => {
-  //     Description.findOneAndUpdate({ course_id: id }, listingInfo, (err) => {
-  //       if (err) {
-  //         reject(err);
-  //         return;
-  //       }
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
 
-  //       resolve(true);
-  //     });
-  //   })
-  // ),
+      queryBuilder += `${key}=%L`;
+
+      if (i !== (keys.length - 1)) {
+        queryBuilder += ',';
+      }
+
+      queryValues.push(listingInfo[key]);
+    }
+
+    if (!queryBuilder) {
+      throw new Error('failed to build query based off of listingInfo');
+    }
+
+    const query = format(`update description set ${queryBuilder} where course_id=%L`, queryValues, id);
+
+    return db.query(query)
+      .then((result) => result.rowCount)
+      .catch((err) => {
+        throw err;
+      });
+  },
 };
