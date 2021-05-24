@@ -17,6 +17,7 @@
     "seed-db": "node ./database/seedRunner.js",
     "schema": "sudo -u postgres psql -d coursera_about -a -f ./database/schema.sql",
     "bench-db": "node ./benchmark/seed.js",
+    "benchmark-query": "node ./benchmark/query",
     "start": "node ./server/index.js",
     "watch": "webpack --watch",
     "react-start": "webpack serve --open",
@@ -36,6 +37,7 @@
     "fast-csv": "^4.3.6",
     "mongoose": "^5.11.18",
     "pg": "^8.6.0",
+    "pg-format": "^1.0.4",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "regenerator-runtime": "^0.13.7"

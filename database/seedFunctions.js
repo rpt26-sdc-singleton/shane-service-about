@@ -1,9 +1,9 @@
 /* eslint-disable no-await-in-loop */
 const faker = require('faker');
-const fs = require('fs');
-const stream = require('stream');
-const csv = require('fast-csv');
-const util = require('util');
+// const fs = require('fs');
+// const stream = require('stream');
+// const csv = require('fast-csv');
+// const util = require('util');
 
 const generateRandomPercentage = () => (Math.floor(Math.random() * 100) / 100);
 
@@ -128,227 +128,252 @@ const generateSkillsYouWillGain = () => {
   return skills;
 };
 
-const generateRecords = async (i, numToGenerate) => {
-  if (typeof i !== 'number') {
-    throw new Error('i must be of type number');
-  } else if (typeof numToGenerate !== 'number') {
-    throw new Error('numToGenerate must be of type number');
+const generateRecord = (id = 1) => {
+  let courseID = id;
+
+  if (Number.isNaN(id)) {
+    courseID = 1;
   }
 
-  let j = i;
-
-  const generate = function g() {
-    if (this.newRecord && this.newRecord.course_id === this.lastRecordID) {
-      // if (!this.push(this.newRecord)) {
-      //   // generate.call(this);
-      //   return;
-      // }
-    }
-
-    j++;
-
-    if (j > numToGenerate) {
-      this.destroy();
-      return;
-    }
-
-    this.newRecord = {
-      course_id: j, // 1 - n
-      // Random number between 0 and 10 million
-      recent_views: Math.floor(Math.random() * 10000000),
-      description: generateFillerText({ paras: 4 }),
-      learner_career_outcomes: generateLearnerCareerOutcomes().splice(0, 1),
-      metadata: generateMetadata(),
-      what_you_will_learn: generateWhatYouWillLearn(),
-      skills_you_will_gain: generateSkillsYouWillGain(),
-    };
-
-    this.lastRecordID = this.newRecord.course_id;
-
-    if (!this.push(this.newRecord)) {
-      generate.call(this);
-      return;
-    }
+  return {
+    courseID,
+    course_id: courseID, // 1 - n
+    // Random number between 0 and 10 million
+    recent_views: Math.floor(Math.random() * 10000000),
+    description: generateFillerText({ paras: 4 }),
+    learner_career_outcomes: generateLearnerCareerOutcomes().splice(0, 1),
+    metadata: generateMetadata(),
+    what_you_will_learn: generateWhatYouWillLearn(),
+    skills_you_will_gain: generateSkillsYouWillGain(),
   };
-
-  const readStream = new stream.Readable({
-    objectMode: true,
-    newRecord: null,
-    lastRecordID: null,
-    async read() {
-        generate.call(this);
-        console.log(`Creating record ${j}`);
-    },
-  });
-
-  return readStream;
 };
 
-const stringifyArrayForPostgres = (arr = []) => {
-  let str = '{';
+// const generateRecords = async (i, numToGenerate) => {
+//   if (typeof i !== 'number') {
+//     throw new Error('i must be of type number');
+//   } else if (typeof numToGenerate !== 'number') {
+//     throw new Error('numToGenerate must be of type number');
+//   }
 
-  for (let i = 0; i < arr.length; i++) {
-    str += `"${encodeURIComponent(JSON.stringify(arr[i]))}"`;
+//   let j = i;
 
-    if (i !== arr.length - 1) {
-      str += ',';
-    }
-  }
+//   const generate = function g() {
+//     if (this.newRecord && this.newRecord.course_id === this.lastRecordID) {
+//       // if (!this.push(this.newRecord)) {
+//       //   // generate.call(this);
+//       //   return;
+//       // }
+//     }
 
-  str += '}';
+//     j++;
 
-  return str;
-};
+//     if (j > numToGenerate) {
+//       this.destroy();
+//       return;
+//     }
 
-const stringifyObjectArrays = (obj = {}) => {
-  const objCopy = Object.assign(obj);
+//     this.newRecord = {
+//       course_id: j, // 1 - n
+//       // Random number between 0 and 10 million
+//       recent_views: Math.floor(Math.random() * 10000000),
+//       description: generateFillerText({ paras: 4 }),
+//       learner_career_outcomes: generateLearnerCareerOutcomes().splice(0, 1),
+//       metadata: generateMetadata(),
+//       what_you_will_learn: generateWhatYouWillLearn(),
+//       skills_you_will_gain: generateSkillsYouWillGain(),
+//     };
 
-  let keys = Object.keys(objCopy);
+//     this.lastRecordID = this.newRecord.course_id;
 
-  for (let i = 0; i < keys.length; i++) {
-    const key = keys[i];
+//     if (!this.push(this.newRecord)) {
+//       generate.call(this);
+//       return;
+//     }
+//   };
 
-    // nested arrays will be JSON.stringified
-    if (Array.isArray(objCopy[key])) {
-      if (key === 'learner_career_outcomes'
-        || key === 'metadata') {
-        objCopy[key] = stringifyArrayForPostgres(objCopy);
-      }
-    }
-  }
+//   const readStream = new stream.Readable({
+//     objectMode: true,
+//     newRecord: null,
+//     lastRecordID: null,
+//     async read() {
+//         generate.call(this);
+//         console.log(`Creating record ${j}`);
+//     },
+//   });
 
-  keys = null;
+//   return readStream;
+// };
 
-  return objCopy;
-};
+// const stringifyArrayForPostgres = (arr = []) => {
+//   let str = '{';
 
-const isFileEmpty = async (filepath = '') => (
-  new Promise((resolve) => {
-    fs.stat(filepath, (err, stats) => {
-      if (err) {
-        resolve(true);
-      } else {
-        console.log(stats.size);
-        resolve(stats.size === 0);
-      }
-    });
-  })
-);
+//   for (let i = 0; i < arr.length; i++) {
+//     str += `"${encodeURIComponent(JSON.stringify(arr[i]))}"`;
 
-const ArraysToJSON = function toJSON(options = {}) {
-  stream.Transform.call(this, options);
+//     if (i !== arr.length - 1) {
+//       str += ',';
+//     }
+//   }
 
-  this._readableState.objectMode = true;
-  this._writableState.objectMode = true;
+//   str += '}';
 
-  return this;
-};
+//   return str;
+// };
 
-util.inherits(ArraysToJSON, stream.Transform);
+// const stringifyObjectArrays = (obj = {}) => {
+//   const objCopy = Object.assign(obj);
 
-ArraysToJSON.prototype._transform = function transform(chunk, enc, cb) {
-  this.push(stringifyObjectArrays(chunk));
+//   let keys = Object.keys(objCopy);
 
-  cb();
-};
+//   for (let i = 0; i < keys.length; i++) {
+//     const key = keys[i];
+
+//     // nested arrays will be JSON.stringified
+//     if (Array.isArray(objCopy[key])) {
+//       if (key === 'learner_career_outcomes'
+//         || key === 'metadata') {
+//         objCopy[key] = stringifyArrayForPostgres(objCopy);
+//       }
+//     }
+//   }
+
+//   keys = null;
+
+//   return objCopy;
+// };
+
+// const isFileEmpty = async (filepath = '') => (
+//   new Promise((resolve) => {
+//     fs.stat(filepath, (err, stats) => {
+//       if (err) {
+//         resolve(true);
+//       } else {
+//         console.log(stats.size);
+//         resolve(stats.size === 0);
+//       }
+//     });
+//   })
+// );
+
+// const ArraysToJSON = function toJSON(options = {}) {
+//   stream.Transform.call(this, options);
+
+//   this._readableState.objectMode = true;
+//   this._writableState.objectMode = true;
+
+//   return this;
+// };
+
+// util.inherits(ArraysToJSON, stream.Transform);
+
+// ArraysToJSON.prototype._transform = function transform(chunk, enc, cb) {
+//   this.push(stringifyObjectArrays(chunk));
+
+//   cb();
+// };
 
 // generateAndSave saves to .csv
-const generateAndSave = async (n, numToGenerate, outputPath) => {
-  if (outputPath.slice(-4) !== '.csv') {
-    throw new Error('output path must include ".csv"');
-  }
+// const generateAndSave = async (n, numToGenerate, outputPath) => {
+//   if (outputPath.slice(-4) !== '.csv') {
+//     throw new Error('output path must include ".csv"');
+//   }
 
-  let writeHeaders = false;
+//   let writeHeaders = false;
 
-  // do not write headers if file is not empty
-  const isEmpty = await isFileEmpty(outputPath);
+//   // do not write headers if file is not empty
+//   const isEmpty = await isFileEmpty(outputPath);
 
-  if (isEmpty) {
-    writeHeaders = true;
-  }
+//   if (isEmpty) {
+//     writeHeaders = true;
+//   }
 
-  const csvStream = csv.format({
-    writeHeaders,
-    headers: true,
-  });
+//   const csvStream = csv.format({
+//     writeHeaders,
+//     headers: true,
+//   });
 
-  const fsStream = fs.createWriteStream(outputPath, { flags: 'a' });
+//   const fsStream = fs.createWriteStream(outputPath, { flags: 'a' });
 
-  csvStream.pipe(fsStream);
+//   csvStream.pipe(fsStream);
 
-  generateRecords(n, numToGenerate, (recordStream) => {
-    const arraysToJSON = new ArraysToJSON();
+//   generateRecords(n, numToGenerate, (recordStream) => {
+//     const arraysToJSON = new ArraysToJSON();
 
-    recordStream.pipe(arraysToJSON).pipe(csvStream);
-  });
-};
+//     recordStream.pipe(arraysToJSON).pipe(csvStream);
+//   });
+// };
 
-const seedDatabase = async (client) => {
-  let insertStatement = 'INSERT INTO description';
-  insertStatement += '(course_id,recent_views,description, learner_career_outcomes,';
-  insertStatement += 'metadata,what_you_will_learn,skills_you_will_gain)';
-  insertStatement += ' VALUES($1, $2, $3, $4, $5, $6, $7)';
+// const seedDatabase = async (client) => {
+//   let insertStatement = 'INSERT INTO description';
+//   insertStatement += '(course_id,recent_views,description, learner_career_outcomes,';
+//   insertStatement += 'metadata,what_you_will_learn,skills_you_will_gain)';
+//   insertStatement += ' VALUES($1, $2, $3, $4, $5, $6, $7)';
 
-  const rollback = async (err) => {
-    await client.query('ROLLBACK');
+//   const rollback = async (err) => {
+//     await client.query('ROLLBACK');
 
-    await client.release();
-    console.log(err);
-    process.exit(1);
-  };
+//     await client.release();
+//     console.log(err);
+//     process.exit(1);
+//   };
 
-  const currentTime = await client.query('select now();');
+//   const currentTime = await client.query('select now();');
 
-  console.log(currentTime.rows.length > 0 ? 'connected to db!' : 'failed to connect!');
+//   console.log(currentTime.rows.length > 0 ? 'connected to db!' : 'failed to connect!');
 
-  generateRecords(1, 1e5)
-    .then((recordStream) => {
-      console.time('Database Seed');
+//   generateRecords(1, 1e5)
+//     .then((recordStream) => {
+//       console.time('Database Seed');
 
-      recordStream.on('finish', () => {
-        console.log('finished seeding');
-      });
+//       recordStream.on('finish', () => {
+//         console.log('finished seeding');
+//       });
 
+//       recordStream.on('end', async () => {
+//         await client.release();
+//         console.log('finished committing insertion :)');
+//         console.timeEnd('Database Seed');
+//       });
 
-      recordStream.on('end', async () => {
-        await client.release();
-        console.log('finished committing insertion :)');
-        console.timeEnd('Database Seed');
-      });
+//       recordStream.on('error', (err) => {
+//         console.log(`record stream error: ${err}`);
+//       });
 
-      recordStream.on('error', (err) => {
-        console.log(`record stream error: ${err}`);
-      });
+//       recordStream.on('data', async (record) => {
+//         // await client.query('BEGIN');
 
-      recordStream.on('data', async (record) => {
-        // await client.query('BEGIN');
+//         client.query(insertStatement, [
+//           record.course_id,
+//           record.recent_views,
+//           record.description,
+//           record.learner_career_outcomes,
+//           record.metadata,
+//           record.what_you_will_learn,
+//           record.skills_you_will_gain,
+//         ]).then((result) => {
+//                let message = 'did not insert row';
+//
+//                if (result.rowCount > 0) {
+//                  message = `inserted row ${record.course_id}`;
+//                }
 
-        client.query(insertStatement, [
-          record.course_id,
-          record.recent_views,
-          record.description,
-          record.learner_career_outcomes,
-          record.metadata,
-          record.what_you_will_learn,
-          record.skills_you_will_gain,
-        ]).then((result) => console.log((result.rowCount > 0) ? `inserted row ${record.course_id}` : 'did not insert row'))
-          .catch((err) => {
-            rollback(`insert ${record.course_id} into db failed: ${err}`)
-              .catch(() => readStream.destroy());
-          });
+//                console.log(message);
+//           .catch((err) => {
+//             rollback(`insert ${record.course_id} into db failed: ${err}`)
+//               .catch(() => readStream.destroy());
+//           });
 
-
-          // await client.query('COMMIT');
-      });
-    })
-    .catch((err) => {
-      rollback(`transaction failed: ${err}`);
-    });
-};
+//           // await client.query('COMMIT');
+//       });
+//     })
+//     .catch((err) => {
+//       rollback(`transaction failed: ${err}`);
+//     });
+// };
 
 module.exports = {
   generateRandomPercentage,
-  generateRecords,
+  // generateRecords,
   generateFillerText,
   generateMetadata,
   generateNumberWithinRange,
@@ -356,6 +381,7 @@ module.exports = {
   generateWhatYouWillLearn,
   generateLanguageList,
   generateLearnerCareerOutcomes,
-  generateAndSave,
-  seedDatabase,
+  generateRecord,
+  // generateAndSave,
+  // seedDatabase,
 };

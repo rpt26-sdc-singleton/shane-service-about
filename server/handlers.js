@@ -3,23 +3,9 @@ const db = require('../database/model');
 
 module.exports = {
   createListing: async (req, res) => {
-    // let item = {
-    //   course_id: 0,
-    //   recent_views: Math.floor(Math.random() * 10000000),
-    // Random number between 0 and 10 million
-    //   description: await seed.generateFillerText({ paras: 4 }), // Bacon ipsum - 4 paragraphs
-    //   learner_career_outcomes: await seed.generateLearnerCareerOutcomes(),
-    //   metadata: await seed.generateMetadata(),
-    //   what_you_will_learn: await seed.generateWhatYouWillLearn(),
-    //   skills_you_will_gain: await seed.generateSkillsYouWillGain(),
-    // };
-    console.log(req.body);
-    let listing = req.body;
+    const listing = req.body;
+
     const { id } = req.params;
-
-    // const isValidListing = await db.isValidListing(listing);
-
-    // console.log(`is a valid listing: ${isValidListing}`);
 
     if (!listing || !id) {
       res.sendStatus(400);
@@ -31,21 +17,27 @@ module.exports = {
       return;
     }
 
-    listing.course_id = id;
-
-    console.log(listing);
+    listing.courseID = id;
 
     try {
-      listing = await db.createListing(listing);
+      const result = await db.createListing(listing);
+
+      if (result < 1) {
+        throw new Error(`did not create listing with id of ${id}`);
+      }
+
+      console.log(`created listing with id of ${id}`);
+
+      res.sendStatus(201);
     } catch (err) {
-      console.log(`create listing failed: ${err}`);
-      res.sendStatus(500);
+      console.log(`create listing failed: ${err.detail}`);
 
-      return;
+      if (err.code === '23505') {
+        res.sendStatus(409);
+      } else {
+        res.sendStatus(500);
+      }
     }
-
-    console.log(`created listing with id of ${listing.course_id}`);
-    res.sendStatus(201);
   },
   // modifyListing: (req, res) => {},
   removeListing: async (req, res) => {
