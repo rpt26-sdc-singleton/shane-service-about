@@ -103,7 +103,7 @@ func newRecord(id int) Record {
 	return Record{
 		courseID:              id,
 		recentViews:           generateViews(),
-		description:           lorem.Paragraph(1, 4),
+		description:           lorem.Paragraph(10, 14),
 		learnerCareerOutcomes: generateCareerOutcomes(),
 		metadata:              generateMetadata(),
 		whatYouWillLearn:      generateWhatYouWillLearn(),
@@ -274,9 +274,7 @@ func generateRecords(batchChan chan batchRequest, batchReq batchRequest, wg *syn
 	}
 
 	close(batchChan)
-	// done <- true
 	wg.Done()
-
 }
 
 func startBatchRunner(batchChan chan batchRequest, wg *sync.WaitGroup) {
