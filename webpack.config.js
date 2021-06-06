@@ -1,8 +1,8 @@
 const path = require('path');
-// const HtmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  mode: 'production',
+  mode: 'development',
   entry: './client/index.jsx',
   devtool: 'source-map',
   // devtool: 'inline-source-map',
@@ -28,10 +28,10 @@ module.exports = {
       },
     ],
   },
-  // plugins: [new HtmlWebpackPlugin({
-  //   title: 'Production',
-  //   template: './public/index.html',
-  // })],
+  plugins: [new HtmlWebpackPlugin({
+    title: 'Production',
+    template: './client/index.html',
+  })],
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'public'),

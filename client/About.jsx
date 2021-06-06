@@ -31,7 +31,8 @@ class About extends React.Component {
     }
     courseID = !courseID ? 1 : courseID;
     console.log('fetching data with course id', courseID);
-    fetch(`http://3.20.191.60/api/about/${courseID}`)
+    // fetch(`http://3.20.191.60/api/about/${courseID}`)
+    fetch(`http://localhost:3002/api/about/${courseID}`)
       .then((response) => response.json())
       .then((data) => {
         this.setState({ courseInfo: data });

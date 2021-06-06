@@ -1,3 +1,5 @@
+// eslint-disable-next-line global-require
+require('newrelic');
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -12,7 +14,7 @@ app.use(express.json());
 
 app.get('/api/about/:id', handlers.getListing);
 
-app.post('/api/about/:id', handlers.createListing);
+app.post('/api/about/new', handlers.createListing);
 
 app.put('/api/about/:id', handlers.updateListing);
 
