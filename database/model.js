@@ -56,12 +56,7 @@ const helpers = {
       const element = arrCopy[i];
 
       if (typeof element === 'string') {
-        // Go uses '+' in their version of encodeURIComponent
-        // Javascript's decodeURIComponent doesn't decode this, so we must replace '+'s with ' '
-        const str = decodeURIComponent(element);
-        const strWithSpaces = str.replace(/\+/g, ' ');
-
-        arrCopy[i] = JSON.parse(strWithSpaces);
+        arrCopy[i] = JSON.parse(element);
       }
     }
 
