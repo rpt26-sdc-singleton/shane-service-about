@@ -90,18 +90,18 @@ module.exports = {
   createListing: function createListing(listingInfo = {}) {
     const listingCopy = helpers.serializeRecord(listingInfo);
 
-    const query = 'insert into description(course_id,recent_views,description,learner_career_outcomes,metadata,what_you_will_learn,skills_you_will_gain) values($1, $2, $3, $4, $5, $6, $7)';
+    const query = 'insert into description(recent_views,description,learner_career_outcomes,metadata,what_you_will_learn,skills_you_will_gain) values($1,$2,$3,$4,$5,$6)';
 
     return db.query(query, [
-      listingCopy.courseID,
       listingCopy.recent_views,
       listingCopy.description,
       listingCopy.learner_career_outcomes,
       listingCopy.metadata,
       listingCopy.what_you_will_learn,
       listingCopy.skills_you_will_gain])
-      .then((result) => result.rowCount)
+      .then((result) => result)
       .catch((err) => {
+        console.log(err);
         throw err;
       });
   },

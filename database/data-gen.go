@@ -6,7 +6,6 @@ import (
 	"flag"
 	"fmt"
 	"math/rand"
-	"net/url"
 	"os"
 	"sync"
 	"time"
@@ -33,11 +32,15 @@ type Record struct {
 	description           string
 	learnerCareerOutcomes []learnerCareerOutcomes
 	metadata              []metadata
+	outcomesStr           []string // postgres friendly text array
+	metadataStr           []string // postgres friendly text array
 	whatYouWillLearn      []string
 	skillsYouWillGain     []string
 }
 
-func (r *Record) outcomeToPostgresArray() (string, error) {
+func (r *Record) outcomeToPostgresArray() error {
+	output := []string{}
+
 	str := "{"
 
 	var outcomeJSON []byte
@@ -49,26 +52,32 @@ func (r *Record) outcomeToPostgresArray() (string, error) {
 		outcomeJSON, err = json.Marshal(r.learnerCareerOutcomes[i])
 
 		if err != nil {
-			return "", err
+			return err
 		}
 
-		str += "\""
+		output = append(output, string(outcomeJSON))
 
-		str += url.QueryEscape(string(outcomeJSON))
+		// str += "\""
 
-		str += "\""
+		// str += url.QueryEscape(string(outcomeJSON))
 
-		if i != (outcomeLen - 1) {
-			str += ","
-		}
+		// str += "\""
+
+		// if i != (outcomeLen - 1) {
+		// 	str += ","
+		// }
 	}
 
 	str += "}"
 
-	return str, nil
+	r.outcomesStr = output
+
+	return nil
 }
 
-func (r *Record) metadataToPostgresArray() (string, error) {
+func (r *Record) metadataToPostgresArray() error {
+	output := []string{}
+
 	str := "{"
 
 	var metadataJSON []byte
@@ -80,23 +89,27 @@ func (r *Record) metadataToPostgresArray() (string, error) {
 		metadataJSON, err = json.Marshal(r.metadata[i])
 
 		if err != nil {
-			return "", err
+			return err
 		}
 
-		str += "\""
+		output = append(output, string(metadataJSON))
 
-		str += url.QueryEscape(string(metadataJSON))
+		// str += "\""
 
-		str += "\""
+		// str += url.QueryEscape(string(metadataJSON))
 
-		if i != (metadataLen - 1) {
-			str += ","
-		}
+		// str += "\""
+
+		// if i != (metadataLen - 1) {
+		// 	str += ","
+		// }
 	}
 
 	str += "}"
 
-	return str, nil
+	r.metadataStr = output
+
+	return nil
 }
 
 func newRecord(id int) Record {
@@ -111,44 +124,55 @@ func newRecord(id int) Record {
 	}
 }
 
-type batchRequest struct {
-	conn  *pgx.Conn
-	batch *pgx.Batch
-	ctx   context.Context
+type databasePipe struct {
+	conn    *pgx.Conn
+	ctx     context.Context
+	records []*Record
 }
 
-func (b *batchRequest) addToQueue(record Record) error {
-	outcomeArray, err := record.outcomeToPostgresArray()
+func (pipe *databasePipe) addToQueue(record *Record) error {
+	if err := record.outcomeToPostgresArray(); err != nil {
+		fmt.Printf("learner outcomes conversion failed: %v\n", err)
 
-	if err != nil {
+		os.Exit(1)
+	}
+
+	if err := record.metadataToPostgresArray(); err != nil {
 		return err
 	}
 
-	metadataArray, err := record.metadataToPostgresArray()
+	pipe.records = append(pipe.records, record)
 
-	if err != nil {
-		return err
-	}
+	return nil
+}
 
-	b.batch.Queue(`insert into description
-			(course_id,recent_views,description, learner_career_outcomes,
-			metadata,what_you_will_learn,skills_you_will_gain)
-			values($1, $2, $3, $4, $5, $6, $7)`, record.courseID, record.recentViews, record.description, outcomeArray,
-		metadataArray, record.whatYouWillLearn, record.skillsYouWillGain)
+func (pipe *databasePipe) send() error {
+	_, err := pipe.conn.CopyFrom(
+		pipe.ctx,
+		pgx.Identifier{"description"},
+		[]string{
+			"recent_views",
+			"description",
+			"learner_career_outcomes",
+			"metadata",
+			"what_you_will_learn",
+			"skills_you_will_gain",
+		},
+		pgx.CopyFromSlice(len(pipe.records), func(i int) ([]interface{}, error) {
+			record := pipe.records[i]
+
+			return []interface{}{
+				record.recentViews,
+				record.description,
+				record.outcomesStr,
+				record.metadataStr,
+				record.whatYouWillLearn,
+				record.skillsYouWillGain,
+			}, nil
+		}),
+	)
 
 	return err
-}
-
-func (b *batchRequest) send() error {
-	batchResults := b.conn.SendBatch(b.ctx, b.batch)
-
-	if _, err := batchResults.Exec(); err != nil {
-		return fmt.Errorf("batch failed: %v", err)
-	} else {
-		b.batch = &pgx.Batch{}
-	}
-
-	return batchResults.Close()
 }
 
 func generateViews() int {
@@ -247,18 +271,17 @@ func generateSkillsGained() []string {
 	return skills
 }
 
-func generateRecords(batchChan chan batchRequest, batchReq batchRequest, wg *sync.WaitGroup) {
+func generateRecords(pipe chan databasePipe, runner databasePipe, wg *sync.WaitGroup) {
 	batchCount := 0
 
 	for i := startAtI; i <= recordsToGenerate; i++ {
 		record := newRecord(i)
 
-		fmt.Printf("generating record %d\n", record.courseID)
+		fmt.Printf("generating record number %d\n", i)
 
-		err := batchReq.addToQueue(record)
+		if err := runner.addToQueue(&record); err != nil {
+			fmt.Printf("failed to add record %d to queue: %v\n", record.courseID, err)
 
-		if err != nil {
-			fmt.Printf("failed to save record %d: %v\n", record.courseID, err)
 			continue
 		}
 
@@ -267,20 +290,19 @@ func generateRecords(batchChan chan batchRequest, batchReq batchRequest, wg *syn
 		// every n generated
 		if batchCount == saveOnEvery || (i == recordsToGenerate) {
 			fmt.Println("sending batch request")
-			batchChan <- batchReq
-			batchReq.batch = &pgx.Batch{}
+			pipe <- runner
 			batchCount = 0
 		}
 	}
 
-	close(batchChan)
+	close(pipe)
 	wg.Done()
 }
 
-func startBatchRunner(batchChan chan batchRequest, wg *sync.WaitGroup) {
-	for br := range batchChan {
-		if err := br.send(); err != nil {
-			fmt.Printf("failed to send batch: %v\n", err)
+func startBatchRunner(pipe chan databasePipe, wg *sync.WaitGroup) {
+	for p := range pipe {
+		if err := p.send(); err != nil {
+			fmt.Printf("failed to send to database: %v\n", err)
 		}
 	}
 
@@ -329,21 +351,21 @@ func main() {
 
 	wg := sync.WaitGroup{}
 
-	batchChan := make(chan batchRequest, 1)
-	batchReq := batchRequest{
-		conn:  conn,
-		batch: &pgx.Batch{},
-		ctx:   context.Background(),
+	pipe := make(chan databasePipe, 1)
+	runner := databasePipe{
+		conn:    conn,
+		records: make([]*Record, 0),
+		ctx:     context.Background(),
 	}
 
 	wg.Add(1)
 
-	go generateRecords(batchChan, batchReq, &wg)
+	go generateRecords(pipe, runner, &wg)
 
 	wg.Add(1)
 
 	// listen for generated records
-	go startBatchRunner(batchChan, &wg)
+	go startBatchRunner(pipe, &wg)
 
 	wg.Wait()
 }

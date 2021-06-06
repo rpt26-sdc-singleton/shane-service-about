@@ -9,3 +9,5 @@ CREATE TABLE IF NOT EXISTS description(
   what_you_will_learn TEXT [] NOT NULL,
   skills_you_will_gain TEXT [] NOT NULL
 );
+
+-- grant usage, select on all sequences in schema public to jrudio;

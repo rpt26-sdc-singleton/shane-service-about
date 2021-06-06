@@ -5,28 +5,22 @@ module.exports = {
   createListing: async (req, res) => {
     const listing = req.body;
 
-    const { id } = req.params;
-
-    if (!listing || !id) {
+    if (!listing) {
       res.sendStatus(400);
       return;
     }
-
-    if (!id || Number.isNaN(Number(id))) {
-      res.sendStatus(400);
-      return;
-    }
-
-    listing.courseID = id;
 
     try {
       const result = await db.createListing(listing);
+      console.log(result);
 
       if (result < 1) {
-        throw new Error(`did not create listing with id of ${id}`);
+        // throw new Error(`did not create listing with id of ${id}`);
+        throw new Error('did not create listing');
       }
 
-      console.log(`created listing with id of ${id}`);
+      console.log('created listing with id');
+      // console.log(`created listing with id of ${id}`);
 
       res.sendStatus(201);
     } catch (err) {
