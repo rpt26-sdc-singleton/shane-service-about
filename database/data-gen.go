@@ -172,6 +172,9 @@ func (pipe *databasePipe) send() error {
 		}),
 	)
 
+	fmt.Printf("records count after send(): %d\n", len(pipe.records))
+	pipe.records = make([]*Record, 0)
+
 	return err
 }
 
@@ -277,7 +280,7 @@ func generateRecords(pipe chan databasePipe, runner databasePipe, wg *sync.WaitG
 	for i := startAtI; i <= recordsToGenerate; i++ {
 		record := newRecord(i)
 
-		fmt.Printf("generating record number %d\n", i)
+		// fmt.Printf("generating record number %d\n", i)
 
 		if err := runner.addToQueue(&record); err != nil {
 			fmt.Printf("failed to add record %d to queue: %v\n", record.courseID, err)
