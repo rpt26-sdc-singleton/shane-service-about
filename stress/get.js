@@ -1,3 +1,4 @@
+const { check, sleep } = require('k6');
 const http = require('k6/http');
 
 // const baseURL = process.env.BASE_URL || 'http://localhost:3002/';
@@ -6,6 +7,9 @@ const baseURL = 'http://localhost:3002/';
 export const options = {
   vus: 1000,
   duration: '60s',
+  thresholds: {
+    // http_req_duration: ['p(95)<2000'],
+  },
 };
 
 const idList = [];
@@ -26,6 +30,8 @@ export default () => {
   });
 
   check(result, {
-    '200 status code': (res) => res === 200,
+    '200 status code': (res) => res.status === 200,
   });
+
+  sleep(1);
 };
