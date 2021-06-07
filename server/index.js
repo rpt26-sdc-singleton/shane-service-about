@@ -1,5 +1,6 @@
 // eslint-disable-next-line global-require
 require('newrelic');
+const bodyParser = require('body-parser');
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -10,6 +11,8 @@ const PORT = 3002;
 
 app.use(cors());
 app.use(express.static('./public'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.get('/api/about/:id', handlers.getListing);

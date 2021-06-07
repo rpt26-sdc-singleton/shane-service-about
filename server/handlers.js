@@ -1,28 +1,36 @@
 const db = require('../database/model');
-// const seed = require('../database/seedFunctions');
 
 module.exports = {
   createListing: async (req, res) => {
-    const listing = req.body;
+    let listing = req.body;
 
-    if (!listing) {
+    if (typeof listing !== 'object') {
+      res.sendStatus(400);
+      return;
+    }
+
+    if (req.headers['content-type'] === 'application/x-www-form-urlencoded') {
+      try {
+        listing = JSON.parse(listing.body);
+      } catch (err) {
+        console.log(`failed to parse body: ${err}`);
+
+        res.sendStatus(400);
+        return;
+      }
+    }
+
+    if (Object.keys(listing).length < 1) {
       res.sendStatus(400);
       return;
     }
 
     try {
       const result = await db.createListing(listing);
-      console.log(result);
 
-      if (result < 1) {
-        // throw new Error(`did not create listing with id of ${id}`);
+      if (result.rowCount < 1) {
         throw new Error('did not create listing');
       }
-
-      console.log('created listing with id');
-      // console.log(`created listing with id of ${id}`);
-
-      res.sendStatus(201);
     } catch (err) {
       console.log(`create listing failed: ${err.detail}`);
 
@@ -32,8 +40,9 @@ module.exports = {
         res.sendStatus(500);
       }
     }
+
+    res.sendStatus(201);
   },
-  // modifyListing: (req, res) => {},
   removeListing: async (req, res) => {
     const { id } = req.params;
 
@@ -59,12 +68,6 @@ module.exports = {
   },
   getListing: async (req, res) => {
     const { id } = req.params;
-    console.log('New request for', id);
-
-    if (!id || Number.isNaN(Number(id))) {
-      res.sendStatus(404);
-      return;
-    }
 
     let data = null;
 
@@ -73,18 +76,14 @@ module.exports = {
     } catch (err) {
       console.log(err);
 
-      if (err === 'id must be of type number') {
+      if (err === 'Error: not found' || err === 'id must be of type number') {
         res.sendStatus(404);
 
         return;
       }
     }
 
-    if (!data) {
-      res.sendStatus(404);
-    } else {
-      res.send(data).status(200);
-    }
+    res.send(data).status(200);
   },
   updateListing: async (req, res) => {
     // get updated fields
