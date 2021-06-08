@@ -1,0 +1,7 @@
+version "3.9"
+
+services:
+  about:
+    build .
+    ports:
+      - "3002:3002"
