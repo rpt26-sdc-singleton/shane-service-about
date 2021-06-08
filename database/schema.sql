@@ -1,3 +1,5 @@
+CREATE DATABASE IF NOT EXISTS coursera_about;
+
 CREATE SCHEMA IF NOT EXISTS about_course;
 
 CREATE TABLE IF NOT EXISTS description(
@@ -10,4 +12,6 @@ CREATE TABLE IF NOT EXISTS description(
   skills_you_will_gain TEXT [] NOT NULL
 );
 
--- grant usage, select on all sequences in schema public to jrudio;
+CREATE USER jrudio WITH ENCRYPTED PASSWORD 'xyz';
+
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public to jrudio;
