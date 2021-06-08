@@ -21,6 +21,7 @@
 1. [Requirements](#requirements)
 1. [Development](#development)
 1. [API](#api-routes)
+1. [Deployment](#deployment)
 
 ## Usage
 
@@ -65,4 +66,22 @@ npm install
 #### DELETE `/api/about/:id`
 
 - returns a 200 status code on successful deletion
+
+## Deployment
+
+### Database
+
+To setup Postgres on Docker:
+
+- Target machine must have docker-compose installed
+- Deploy `docker-compose.yml` and `schema.sql` to the server
+- Change the password in `schema.sql` and `docker-compose.yml` to something secure and in sync
+
+To seed:
+
+Requirements:
+  Go 1.14+
+
+- build the `data-gen.go` via `go build -o seed`
+- `PG_URL=postgres://<username>:<password>@<host>:<port>/<database-name>`
 
