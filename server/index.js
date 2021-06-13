@@ -1,3 +1,7 @@
+if (!process.env.CI) {
+  // eslint-disable-next-line global-require
+  require('dotenv').config();
+}
 // eslint-disable-next-line global-require
 require('newrelic');
 const bodyParser = require('body-parser');

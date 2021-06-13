@@ -2,18 +2,13 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 
+require('dotenv').config();
+
+console.log('base url:', process.env.BASE_URL);
+
 module.exports = {
-  mode: 'development',
+  mode: 'production',
   entry: './client/index.jsx',
-  devtool: 'source-map',
-  // devtool: 'inline-source-map',
-  // devServer: {
-  //   proxy: {
-  //     '/': 'http://localhost:3002',
-  //   },
-  //   contentBase: './public',
-  //   hot: true,
-  // },
   module: {
     rules: [
       {

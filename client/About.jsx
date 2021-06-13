@@ -5,6 +5,8 @@ import Detail from './components/detail/Detail.jsx';
 import Meta from './components/meta/Meta.jsx';
 import Skills from './components/skills/Skills.jsx';
 
+const baseURL = process.env.BASE_URL;
+
 class About extends React.Component {
   constructor(props) {
     super(props);
@@ -31,18 +33,17 @@ class About extends React.Component {
     }
     courseID = !courseID ? 1 : courseID;
     console.log('fetching data with course id', courseID);
-    // fetch(`http://3.20.191.60/api/about/${courseID}`)
-    fetch(`http://localhost:3002/api/about/${courseID}`)
+    fetch(`${baseURL}/api/about/${courseID}`)
       .then((response) => response.json())
       .then((data) => {
         this.setState({ courseInfo: data });
       })
       .catch((err) => console.error(err));
-    fetch('http://54.176.19.199:3006/api/svgs')
-      .then((response) => response.json())
-      .then((data) => {
-        this.setState({ svgs: data });
-      });
+    // fetch('http://54.176.19.199:3006/api/svgs')
+    //   .then((response) => response.json())
+    //   .then((data) => {
+    //     this.setState({ svgs: data });
+    //   });
   }
 
   expand() {
