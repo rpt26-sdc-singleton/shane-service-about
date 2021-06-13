@@ -294,6 +294,12 @@ func generateRecords(pipe chan databasePipe, runner databasePipe, wg *sync.WaitG
 		if batchCount == saveOnEvery || (i == recordsToGenerate) {
 			fmt.Println("sending batch request")
 			pipe <- runner
+
+			runner = databasePipe{
+				conn:    runner.conn,
+				ctx:     runner.ctx,
+				records: make([]*Record, 0),
+			}
 			batchCount = 0
 		}
 	}
@@ -349,7 +355,7 @@ func main() {
 
 		fmt.Printf("Generated %d records in %v\n", recordsToGenerate, time.Since(start))
 
-		os.Exit(0)
+		// os.Exit(0)
 	}(start)
 
 	wg := sync.WaitGroup{}
@@ -371,4 +377,6 @@ func main() {
 	go startBatchRunner(pipe, &wg)
 
 	wg.Wait()
+
+	fmt.Println("after wait")
 }
