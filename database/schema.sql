@@ -1,8 +1,10 @@
-CREATE DATABASE IF NOT EXISTS coursera_about;
+CREATE DATABASE coursera_about;
 
-CREATE SCHEMA IF NOT EXISTS about_course;
+CREATE SCHEMA about_course;
 
-CREATE TABLE IF NOT EXISTS description(
+\c coursera_about;
+
+CREATE TABLE description(
   course_id SERIAL PRIMARY KEY,
   recent_views INT NOT NULL,
   description VARCHAR (3000) NOT NULL,
