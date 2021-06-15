@@ -19,6 +19,20 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
+function getRandomID() {
+  const max = 10000000;
+  const min = 8999999;
+
+  return Math.floor(Math.random() * (max - min) + min);
+}
+
+app.get('/api/loader-io', (req, res) => {
+  // hit a random record in the last 10% of the database
+  req.params.id = getRandomID();
+
+  handlers.getListing(req, res);
+});
+
 app.get('/api/about/:id', handlers.getListing);
 
 app.post('/api/about/new', handlers.createListing);
