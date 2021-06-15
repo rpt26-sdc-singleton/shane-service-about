@@ -27,6 +27,10 @@ app.put('/api/about/:id', handlers.updateListing);
 
 app.delete('/api/about/:id', handlers.removeListing);
 
+app.get('/loaderio-0b44c64b2b2de9b1a921c6d2845827b0.txt', (req, res) => {
+  res.sendFile(path.resolve(__dirname, 'loaderio-0b44c64b2b2de9b1a921c6d2845827b0.txt'));
+});
+
 app.get('/*', (req, res) => {
   res.sendFile(path.resolve(__dirname, '../public/index.html'));
 });
