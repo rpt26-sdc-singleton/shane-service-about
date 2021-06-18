@@ -5,10 +5,17 @@ if (!process.env.CI) {
 // eslint-disable-next-line global-require
 require('newrelic');
 const bodyParser = require('body-parser');
+const fs = require('fs');
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const handlers = require('./handlers');
+
+function getLoaderIOFile() {
+  const loaderFiles = fs.readdirSync(path.resolve(__dirname)).filter((filename) => filename.endsWith('.txt'));
+
+  return loaderFiles[0];
+}
 
 const app = express();
 const PORT = 3002;
@@ -41,8 +48,10 @@ app.put('/api/about/:id', handlers.updateListing);
 
 app.delete('/api/about/:id', handlers.removeListing);
 
-app.get('/loaderio-0b44c64b2b2de9b1a921c6d2845827b0.txt', (req, res) => {
-  res.sendFile(path.resolve(__dirname, 'loaderio-0b44c64b2b2de9b1a921c6d2845827b0.txt'));
+app.get('/loaderio-:id', (req, res) => {
+  const filename = getLoaderIOFile();
+
+  res.sendFile(path.resolve(__dirname, filename));
 });
 
 app.get('/*', (req, res) => {

@@ -5,3 +5,5 @@ services:
     build: .
     ports:
       - "3002:3002"
+    volumes:
+      - ./server:/usr/src/app/server
