@@ -33,6 +33,10 @@ function getRandomID() {
   return Math.floor(Math.random() * (max - min) + min);
 }
 
+app.get('/health', (req, res) => {
+  res.sendStatus(200);
+});
+
 app.get('/api/loader-io', (req, res) => {
   // hit a random record in the last 10% of the database
   req.params.id = getRandomID();
