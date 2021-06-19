@@ -1,5 +1,7 @@
 FROM node:14
 ENV NODE_ENV=production
+ENV NR_NATIVE_METRICS_NO_DOWNLOAD=true
+ENV NR_NATIVE_METRICS_NO_BUILD=true
 WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install --only=production
