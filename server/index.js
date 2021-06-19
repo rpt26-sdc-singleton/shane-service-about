@@ -9,6 +9,10 @@ const fs = require('fs');
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const { collectDefaultMetrics, register } = require('prom-client');
+
+collectDefaultMetrics();
+
 const handlers = require('./handlers');
 
 function getLoaderIOFile() {
@@ -32,6 +36,16 @@ function getRandomID() {
 
   return Math.floor(Math.random() * (max - min) + min);
 }
+
+app.get('/metrics', (req, res) => {
+  register.metrics()
+    .then((metrics) => {
+      res.set('Content-Type', register.contentType);
+      res.end(metrics);
+    }).catch((err) => {
+      res.status(500).end(err);
+    });
+});
 
 app.get('/health', (req, res) => {
   res.sendStatus(200);
